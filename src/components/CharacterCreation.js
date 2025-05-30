@@ -1,110 +1,110 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
+import { setDoc, doc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 import classOptions from '../utils/classOptions';
 
 function CharacterCreation() {
-  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [selectedClass, setSelectedClass] = useState('');
-  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log('Form submitted');
-    if (!username || !selectedClass) {
-      console.warn('Missing username or class');
-      setError('Please enter a username and select a class.');
-      return;
-    }
 
     const user = auth.currentUser;
+    if (!user) return navigate('/login');
     console.log('Current user:', user);
-    if (!user) {
-      console.warn('No user logged in. Redirecting to login.');
-      return navigate('/login');
-    }
 
-    const chosen = classOptions[selectedClass];
-    if (!chosen) {
-      console.error('Invalid class selected');
-      return;
-    }
+    if (!username || !selectedClass) return alert('Fill in all fields');
 
-    const maxHealth = 10 + chosen.startingStats.vitality * 2;
-    const newUser = {
+    const classData = classOptions[selectedClass];
+    if (!classData) return alert('Invalid class selection');
+
+    const startingItem = classData.startingItem;
+
+    const userData = {
       username,
       class: selectedClass,
-      stats: { ...chosen.startingStats },
-      avatar: chosen.avatar,
-      coins: 100,
+      avatar: classData.avatar,
       level: 1,
       xp: 0,
+      coins: 50,
+      stats: classData.startingStats,
       health: {
-        current: maxHealth,
-        max: maxHealth
+        current: 100,
+        max: 100
       },
-      inventory: [chosen.startingItem],
-      equipped: {
-        weapon: chosen.startingItem.type === 'Weapon' ? chosen.startingItem : null,
-        armor: null,
-        boots: null,
-        consumable: null
-      },
-      createdAt: new Date().toISOString(),
-      lastActivity: new Date().toISOString(),
-      playtime: 0
+      inventory: [startingItem],
+      equipped: { weapon: startingItem },
+      questsCompleted: [],
+      monstersDefeated: 0,
+      xpHistory: [],
+      questHistory: [],
+      battleHistory: [],
+      lastActivity: new Date().toISOString().split('T')[0],
+      playtime: 0,
+      fitness: {
+        steps: 0,
+        miles: 0,
+        workouts: 0,
+        strengthSessions: 0,
+        sleepDays: 0,
+        waterDays: 0
+      }
     };
 
     try {
-      console.log('Writing user to Firestore...', newUser);
-      await setDoc(doc(db, 'users', user.uid), newUser);
-      console.log('User saved successfully.');
+      console.log('Writing user to Firestore...', userData);
+      await setDoc(doc(db, 'users', user.uid), userData);
       navigate('/dashboard');
     } catch (err) {
-      console.error('Failed to save user:', err);
-      setError('Failed to create character.');
+      console.error('Error creating user:', err);
+      alert('Error creating character. Try again.');
     }
   };
 
   return (
     <div style={{ padding: '2rem' }}>
-      <h2>Create Your Character</h2>
+      <h2>🛡️ Create Your Hero</h2>
       <form onSubmit={handleSubmit}>
-        <label>Username:</label><br />
-        <input
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        /><br /><br />
+        <label>
+          Character Name:
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+        </label>
 
-        <label>Choose a Class:</label><br />
-        <select value={selectedClass} onChange={(e) => setSelectedClass(e.target.value)} required>
-          <option value="">-- Select Class --</option>
-          {Object.entries(classOptions).map(([key, option]) => (
-            <option key={key} value={key}>{option.label}</option>
+        <h3>Choose a Class</h3>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+          {Object.entries(classOptions).map(([key, cls]) => (
+            <div
+              key={key}
+              onClick={() => setSelectedClass(key)}
+              style={{
+                border: selectedClass === key ? '3px solid #3498db' : '1px solid #ccc',
+                padding: '1rem',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                backgroundColor: selectedClass === key ? `${cls.color}22` : '#f9f9f9',
+                width: '180px'
+              }}
+            >
+              <h4>{cls.label}</h4>
+              <img src={cls.avatar} alt={cls.label} width="50" />
+              <p>{cls.description}</p>
+              <p>Starting Item: {cls.startingItem.name}</p>
+            </div>
           ))}
-        </select>
-
-        {selectedClass && (
-          <div style={{ marginTop: '1rem' }}>
-            <h4>{classOptions[selectedClass].description}</h4>
-            <ul>
-              {Object.entries(classOptions[selectedClass].startingStats).map(([stat, value]) => (
-                <li key={stat}>{stat.toUpperCase()}: {value}</li>
-              ))}
-            </ul>
-            <p><strong>Starting Item:</strong> {classOptions[selectedClass].startingItem.name}</p>
-            <p>{classOptions[selectedClass].startingItem.description}</p>
-          </div>
-        )}
+        </div>
 
         <br />
-        <button type="submit">Start Adventure</button>
+        <button type="submit">🚀 Start Adventure</button>
       </form>
-
-      {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
   );
 }

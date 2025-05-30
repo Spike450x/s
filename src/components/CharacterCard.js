@@ -19,7 +19,7 @@ function CharacterCard({ user }) {
   const hpPercentage = Math.min((currentHealth / maxHealth) * 100, 100);
 
   const equippedItems = user.equipped || {};
-  const effectiveStats = getEffectiveStats(user.stats, equippedItems);
+  const effectiveStats = getEffectiveStats(user.stats || {}, equippedItems);
 
   const [visibleStat, setVisibleStat] = useState(null);
   const [visibleTooltip, setVisibleTooltip] = useState(null);
@@ -47,7 +47,7 @@ function CharacterCard({ user }) {
       ref={tooltipRef}
     >
       <span style={{ fontWeight: 'bold' }}>
-        {statIcons[stat]} {label}: {effectiveStats[stat]}
+        {statIcons[stat]} {label}: {effectiveStats[stat] ?? 0}
       </span>
       {visibleStat === stat && (
         <div style={{ position: 'absolute', top: '-28px', left: '0' }}>

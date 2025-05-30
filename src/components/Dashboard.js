@@ -1,4 +1,3 @@
-// src/components/Dashboard.js
 import React, { useEffect, useState } from 'react';
 import { auth, db } from '../firebase';
 import { useNavigate } from 'react-router-dom';
@@ -30,13 +29,19 @@ function Dashboard() {
 
       if (!hasUpdatedStats) {
         setHasUpdatedStats(true);
-        await Promise.all([
-          updateDoc(userRef, {
-            lastActivity: new Date().toISOString().split('T')[0],
-            playtime: increment(0.25)
-          }),
-          updateStatsFromFitness(user.uid)
-        ]);
+        const today = new Date().toISOString().split('T')[0];
+
+        const updateFields = {};
+        if (data.lastActivity !== today) {
+          updateFields.lastActivity = today;
+          updateFields.playtime = increment(0.25);
+        }
+
+        if (Object.keys(updateFields).length > 0) {
+          await updateDoc(userRef, updateFields);
+        }
+
+        await updateStatsFromFitness(user.uid);
       }
     });
 
@@ -49,18 +54,48 @@ function Dashboard() {
   };
 
   const handleEquip = async (item) => {
-    const type = item.type.toLowerCase();
-    const userRef = doc(db, 'users', userData.id);
-    await updateDoc(userRef, {
-      [`equipped.${type}`]: item
-    });
+    try {
+      if (!userData?.id) {
+        console.warn('User ID is undefined, cannot equip item.');
+        return;
+      }
+
+      const type = (item.type || '').toLowerCase().replace(/[^a-z0-9]/gi, '');
+
+      const allowedKeys = [
+        'name', 'type', 'rarity', 'effect', 'description',
+        'strength', 'intellect', 'agility', 'vitality', 'luck',
+        'endurance', 'icon'
+      ];
+      const sanitizedItem = Object.fromEntries(
+        Object.entries(item).filter(([key, value]) =>
+          allowedKeys.includes(key) && value !== undefined)
+      );
+
+      const userRef = doc(db, 'users', userData.id);
+      await updateDoc(userRef, {
+        [`equipped.${type}`]: sanitizedItem
+      });
+    } catch (err) {
+      console.error('Equip error:', err.message || err);
+    }
   };
 
   const handleUnequip = async (type) => {
-    const userRef = doc(db, 'users', userData.id);
-    await updateDoc(userRef, {
-      [`equipped.${type}`]: null
-    });
+    try {
+      if (!userData?.id) {
+        console.warn('User ID is undefined, cannot unequip item.');
+        return;
+      }
+
+      const key = (type || '').toLowerCase().replace(/[^a-z0-9]/gi, '');
+      const userRef = doc(db, 'users', userData.id);
+      await updateDoc(userRef, {
+        [`equipped.${key}`]: null
+      });
+    } catch (err) {
+      console.error('Unequip error:', err.message || err);
+    }
   };
 
   if (!userData) return <p>Loading your character...</p>;

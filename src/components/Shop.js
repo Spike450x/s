@@ -1,134 +1,132 @@
-// src/components/Shop.js
 import React, { useEffect, useState } from 'react';
 import { auth, db } from '../firebase';
-import { doc, onSnapshot, updateDoc, arrayUnion, getDoc } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom';
+import {
+  doc,
+  getDoc,
+  runTransaction
+} from 'firebase/firestore';
+import itemIcons from '../utils/itemIcons';
+
+const SHOP_ITEMS = [
+  {
+    id: 'sword_of_flame',
+    name: 'Sword of Flame',
+    type: 'Weapon',
+    rarity: 'Epic',
+    effect: '+5 Strength',
+    stat: 'strength',
+    bonus: 5,
+    price: 50,
+    description: 'A blazing sword that grants immense power.',
+    icon: itemIcons.sword
+  },
+  {
+    id: 'boots_of_wind',
+    name: 'Boots of Wind',
+    type: 'Boots',
+    rarity: 'Rare',
+    effect: '+3 Agility',
+    stat: 'agility',
+    bonus: 3,
+    price: 30,
+    description: 'Swift boots that enhance your speed.',
+    icon: itemIcons.boots
+  },
+  {
+    id: 'potion_of_might',
+    name: 'Potion of Might',
+    type: 'Consumable',
+    rarity: 'Common',
+    effect: '+2 Strength (1-time use)',
+    stat: 'strength',
+    bonus: 2,
+    price: 15,
+    description: 'A one-time potion to boost your might.',
+    icon: itemIcons.potion
+  }
+];
 
 function Shop() {
-  const [items, setItems] = useState([
-    {
-      name: 'Iron Sword',
-      type: 'Weapon',
-      rarity: 'Uncommon',
-      effect: '+2 Strength',
-      cost: 30,
-      description: 'Heavier blade that boosts strength.',
-      icon: 'https://cdn-icons-png.flaticon.com/512/7434/7434791.png'
-    },
-    {
-      name: 'Wizard Hat',
-      type: 'Armor',
-      rarity: 'Rare',
-      effect: '+3 Intellect',
-      cost: 50,
-      description: 'Hat infused with arcane wisdom.',
-      icon: 'https://cdn-icons-png.flaticon.com/512/4341/4341025.png'
-    },
-    {
-      name: 'Swift Boots',
-      type: 'Boots',
-      rarity: 'Uncommon',
-      effect: '+2 Agility',
-      cost: 25,
-      description: 'Light boots perfect for running.',
-      icon: 'https://cdn-icons-png.flaticon.com/512/3536/3536860.png'
-    },
-    {
-      name: 'Health Potion',
-      type: 'Consumable',
-      rarity: 'Common',
-      effect: '+10 HP',
-      cost: 15,
-      description: 'Restores a small amount of health.',
-      icon: 'https://cdn-icons-png.flaticon.com/512/590/590685.png'
-    }
-  ]);
   const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [purchasedIds, setPurchasedIds] = useState([]);
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const user = auth.currentUser;
-    if (!user) return navigate('/login');
-
-    const userRef = doc(db, 'users', user.uid);
-
-    const unsubscribe = onSnapshot(userRef, (snap) => {
+    const fetchData = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+      const snap = await getDoc(doc(db, 'users', user.uid));
       if (snap.exists()) {
-        setUserData({ ...snap.data(), id: user.uid });
-        setLoading(false);
+        const data = snap.data();
+        setUserData({ ...data, id: user.uid });
+        const inventory = data.inventory || [];
+        setPurchasedIds(inventory.map(item => item.id));
       }
-    });
+    };
+    fetchData();
+  }, []);
 
-    return () => unsubscribe();
-  }, [navigate]);
-
-  const handleBuy = async (item) => {
-    const user = auth.currentUser;
-    if (!user || !userData) return;
-
-    if (userData.coins < item.cost) {
-      alert('Not enough coins!');
+  const buyItem = async (item) => {
+    if (!userData || purchasedIds.includes(item.id)) return;
+    if ((userData.coins || 0) < item.price) {
+      setMessage('❌ Not enough coins!');
       return;
     }
 
-    const userRef = doc(db, 'users', user.uid);
-    const currentInventory = userData.inventory || [];
-    const alreadyOwned = currentInventory.some(inv => inv.name === item.name);
-
-    if (alreadyOwned) {
-      alert('You already own this item.');
-      return;
-    }
+    setPurchasedIds(prev => [...prev, item.id]); // local UI update
+    setMessage(`✅ Bought ${item.name}`);
 
     try {
-      await updateDoc(userRef, {
-        coins: userData.coins - item.cost,
-        inventory: arrayUnion(item)
-      });
+      const userRef = doc(db, 'users', userData.id);
+      await runTransaction(db, async (tx) => {
+        const snap = await tx.get(userRef);
+        if (!snap.exists()) throw new Error('User not found');
+        const data = snap.data();
 
-      alert(`✅ You bought ${item.name}!`);
+        const newCoins = (data.coins || 0) - item.price;
+        const inventory = data.inventory || [];
+        const alreadyBought = inventory.some(i => i.id === item.id);
+        if (alreadyBought) return;
+
+        tx.update(userRef, {
+          coins: newCoins,
+          inventory: [...inventory, item]
+        });
+      });
     } catch (err) {
-      console.error(err);
-      alert('❌ Purchase failed.');
+      console.error('❌ Failed to buy:', err);
+      setPurchasedIds(prev => prev.filter(id => id !== item.id)); // rollback
+      setMessage('⚠️ Purchase failed.');
     }
   };
 
-  if (loading || !userData) return <p>Loading shop...</p>;
+  if (!userData) return <p>Loading shop...</p>;
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>🛒 Item Shop</h2>
-      <p>Coins: {userData.coins}</p>
-      {items.map((item, idx) => {
-        const owned = (userData.inventory || []).some(i => i.name === item.name);
-
-        return (
-          <div
-            key={idx}
-            style={{
-              border: '1px solid #ccc',
-              borderRadius: '8px',
-              marginBottom: '10px',
-              padding: '10px',
-              backgroundColor: owned ? '#f4f4f4' : '#fff'
-            }}
+    <div>
+      <h2>🛒 Shop</h2>
+      <p>💰 Coins: {userData.coins || 0}</p>
+      {SHOP_ITEMS.map(item => (
+        <div key={item.id} style={{
+          marginBottom: '10px',
+          padding: '10px',
+          border: '1px solid #ccc',
+          borderRadius: '8px',
+          backgroundColor: purchasedIds.includes(item.id) ? '#e0e0e0' : '#fff'
+        }}>
+          <img src={item.icon} alt={item.name} width="40" />
+          <p><strong>{item.name}</strong> - {item.effect}</p>
+          <p>{item.description}</p>
+          <p><strong>{item.price} Coins</strong> | {item.rarity}</p>
+          <button
+            onClick={() => buyItem(item)}
+            disabled={purchasedIds.includes(item.id)}
           >
-            <img src={item.icon} alt={item.name} style={{ width: '50px', marginRight: '10px' }} />
-            <strong>{item.name}</strong> ({item.rarity}) - {item.effect}<br />
-            <em>{item.description}</em><br />
-            <p>Cost: {item.cost} coins</p>
-            <button
-              onClick={() => handleBuy(item)}
-              disabled={userData.coins < item.cost || owned}
-            >
-              {owned ? '✅ Owned' : 'Buy'}
-            </button>
-          </div>
-        );
-      })}
-      <br />
-      <button onClick={() => navigate('/dashboard')}>🔙 Back to Dashboard</button>
+            {purchasedIds.includes(item.id) ? '✅ Purchased' : 'Buy'}
+          </button>
+        </div>
+      ))}
+      <p>{message}</p>
     </div>
   );
 }

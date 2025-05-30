@@ -1,7 +1,7 @@
-
+// src/pages/Statistics.js
 import React, { useEffect, useState } from 'react';
 import { auth, db } from '../firebase';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { Line, Bar } from 'react-chartjs-2';
 import {
@@ -22,15 +22,14 @@ function Statistics() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const user = auth.currentUser;
-    if (!user) return navigate('/login');
+    const fetchStats = async () => {
+      const user = auth.currentUser;
+      if (!user) return navigate('/login');
 
-    const userRef = doc(db, 'users', user.uid);
-
-    const unsubscribe = onSnapshot(userRef, (snap) => {
+      const snap = await getDoc(doc(db, 'users', user.uid));
       if (!snap.exists()) return;
-      const data = snap.data();
 
+      const data = snap.data();
       const xpHistory = (data.xpHistory || []).sort((a, b) => new Date(a.date) - new Date(b.date));
       const battleHistory = data.battleHistory || [];
 
@@ -45,9 +44,9 @@ function Statistics() {
         xpHistory,
         battleResults: { wins, losses }
       });
-    });
+    };
 
-    return () => unsubscribe();
+    fetchStats();
   }, [navigate]);
 
   if (!stats) return <p>Loading stats...</p>;
@@ -76,7 +75,6 @@ function Statistics() {
   return (
     <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
       <h2>📊 Player Statistics</h2>
-
       <p><strong>Last Activity:</strong> {stats.lastActivity}</p>
       <p><strong>Total Playtime:</strong> {stats.playtime} hrs</p>
       <p><strong>Monsters Defeated:</strong> {stats.monstersDefeated}</p>
