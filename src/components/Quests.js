@@ -12,6 +12,7 @@ function Quests() {
   const navigate = useNavigate();
   const [completed, setCompleted] = useState([]);
   const [processing, setProcessing] = useState(false);
+  const [message, setMessage] = useState('');
   const debounceRef = useRef(null);
 
   const quests = [
@@ -36,7 +37,8 @@ function Quests() {
   const completeQuest = async (quest) => {
     if (processing || completed.includes(quest.id)) return;
     setProcessing(true);
-    setCompleted(prev => [...prev, quest.id]); // UI feedback
+    setCompleted(prev => [...prev, quest.id]);
+    setMessage(`✅ Completed: ${quest.name}`);
 
     const user = auth.currentUser;
     if (!user) return navigate('/login');
@@ -61,7 +63,8 @@ function Quests() {
       });
     } catch (err) {
       console.error('⚠️ Quest failed:', err);
-      setCompleted(prev => prev.filter(id => id !== quest.id)); // rollback UI
+      setCompleted(prev => prev.filter(id => id !== quest.id));
+      setMessage('⚠️ Quest failed.');
     } finally {
       clearTimeout(debounceRef.current);
       debounceRef.current = setTimeout(() => setProcessing(false), 1000);
@@ -69,30 +72,34 @@ function Quests() {
   };
 
   return (
-    <div>
+    <div style={{ textAlign: 'center', padding: '2rem' }}>
       <h2>🗺️ Daily Quests</h2>
-      {quests.map(quest => (
-        <div key={quest.id} style={{
-          marginBottom: '10px',
-          padding: '10px',
-          border: '1px solid #ccc',
-          borderRadius: '8px',
-          backgroundColor: completed.includes(quest.id) ? '#d4edda' : '#fff'
-        }}>
-          <p><strong>{quest.name}</strong></p>
-          <p>Reward: {quest.xp} XP / {quest.coins} Coins</p>
-          <button
-            onClick={() => completeQuest(quest)}
-            disabled={completed.includes(quest.id)}
-          >
-            {completed.includes(quest.id) ? '✅ Completed' : 'Complete Quest'}
-          </button>
-        </div>
-      ))}
-      <br />
-      <button onClick={() => navigate('/dashboard')}>
-        🔙 Back to Dashboard
-      </button>
+
+      <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '20px' }}>
+        {quests.map(quest => (
+          <div key={quest.id} style={{
+            width: '250px',
+            padding: '15px',
+            borderRadius: '8px',
+            backgroundColor: completed.includes(quest.id) ? '#d4edda' : '#fff',
+            border: '1px solid #ccc',
+            boxShadow: '0 0 8px rgba(0,0,0,0.05)'
+          }}>
+            <h4>{quest.name}</h4>
+            <p>🎁 Reward: {quest.xp} XP / {quest.coins} Coins</p>
+            <button
+              onClick={() => completeQuest(quest)}
+              disabled={completed.includes(quest.id)}
+              style={{ marginTop: '10px', padding: '8px 16px' }}
+            >
+              {completed.includes(quest.id) ? '✅ Completed' : 'Complete Quest'}
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <p style={{ marginTop: '1rem' }}>{message}</p>
+      <button onClick={() => navigate('/dashboard')}>🔙 Back to Dashboard</button>
     </div>
   );
 }

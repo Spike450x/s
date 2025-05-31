@@ -12,7 +12,7 @@ const classOptions = {
       effect: '+1 Strength',
       description: 'A basic sword for aspiring warriors.',
       strength: 1,
-      icon: 'https://cdn-icons-png.flaticon.com/512/3144/3144456.png'
+      icon: 'https://img.icons8.com/?size=100&id=6Or3STDYuLF6&format=png&color=000000'
     }
   },
   wizard: {
