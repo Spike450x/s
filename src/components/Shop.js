@@ -5,16 +5,17 @@ import {
   getDoc,
   runTransaction
 } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom';
 import itemIcons from '../utils/itemIcons';
 import { rarityColors } from '../utils/colors';
+
+const coinIcon = 'https://img.icons8.com/emoji/48/coin-emoji.png';
 
 const SHOP_ITEMS = [
   {
     id: 'sword_of_flame',
     name: 'Sword of Flame',
     type: 'Weapon',
-    rarity: 'epic',
+    rarity: 'Epic',
     effect: '+5 Strength',
     stat: 'strength',
     bonus: 5,
@@ -26,7 +27,7 @@ const SHOP_ITEMS = [
     id: 'boots_of_wind',
     name: 'Boots of Wind',
     type: 'Boots',
-    rarity: 'rare',
+    rarity: 'Rare',
     effect: '+3 Agility',
     stat: 'agility',
     bonus: 3,
@@ -38,7 +39,7 @@ const SHOP_ITEMS = [
     id: 'potion_of_might',
     name: 'Potion of Might',
     type: 'Consumable',
-    rarity: 'common',
+    rarity: 'Common',
     effect: '+2 Strength (1-time use)',
     stat: 'strength',
     bonus: 2,
@@ -52,7 +53,6 @@ function Shop() {
   const [userData, setUserData] = useState(null);
   const [purchasedIds, setPurchasedIds] = useState([]);
   const [message, setMessage] = useState('');
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,7 +76,7 @@ function Shop() {
       return;
     }
 
-    setPurchasedIds(prev => [...prev, item.id]);
+    setPurchasedIds(prev => [...prev, item.id]); // local UI update
     setMessage(`✅ Bought ${item.name}`);
 
     try {
@@ -98,7 +98,7 @@ function Shop() {
       });
     } catch (err) {
       console.error('❌ Failed to buy:', err);
-      setPurchasedIds(prev => prev.filter(id => id !== item.id));
+      setPurchasedIds(prev => prev.filter(id => id !== item.id)); // rollback
       setMessage('⚠️ Purchase failed.');
     }
   };
@@ -106,36 +106,49 @@ function Shop() {
   if (!userData) return <p>Loading shop...</p>;
 
   return (
-    <div style={{ textAlign: 'center' }}>
-      <h2>🛒 Shop</h2>
-      <p>💰 Coins: {userData.coins || 0}</p>
-      {SHOP_ITEMS.map(item => (
-        <div key={item.id} style={{
-          margin: '10px auto',
-          maxWidth: '300px',
-          padding: '10px',
-          border: '2px solid #ccc',
-          borderRadius: '8px',
-          backgroundColor: purchasedIds.includes(item.id) ? '#e0e0e0' : rarityColors[item.rarity] || '#fff'
-        }}>
-          <img src={item.icon} alt={item.name} width="40" />
-          <h4>{item.name}</h4>
-          <p><em>{item.description}</em></p>
-          <p>{item.effect}</p>
-          <p><strong>💰 {item.price}</strong> | {item.rarity}</p>
-          <button
-            onClick={() => buyItem(item)}
-            disabled={purchasedIds.includes(item.id)}
+    <div>
+      <h2 style={{ textAlign: 'center' }}>🛒 Shop</h2>
+      <p style={{ textAlign: 'center' }}>💰 Coins: {userData.coins || 0}</p>
+      <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '20px' }}>
+        {SHOP_ITEMS.map(item => (
+          <div
+            key={item.id}
+            style={{
+              width: '220px',
+              padding: '12px',
+              border: `3px solid ${rarityColors[item.rarity.toLowerCase()] || '#ccc'}`,
+              borderRadius: '10px',
+              backgroundColor: '#fff',
+              textAlign: 'center'
+            }}
           >
-            {purchasedIds.includes(item.id) ? '✅ Purchased' : 'Buy'}
-          </button>
-        </div>
-      ))}
-      <p>{message}</p>
-      <br />
-      <button onClick={() => navigate('/dashboard')}>
-        🔙 Back to Dashboard
-      </button>
+            <img src={item.icon} alt={item.name} width="40" />
+            <h3 style={{ margin: '10px 0 5px' }}>{item.name}</h3>
+            <p style={{ margin: '0', fontWeight: 'bold', color: rarityColors[item.rarity.toLowerCase()] }}>
+              {item.rarity.toUpperCase()}
+            </p>
+            <p style={{ marginTop: '8px' }}>{item.description}</p>
+            <p>{item.effect}</p>
+            <p>
+              <img src={coinIcon} alt="coin" width="16" style={{ verticalAlign: 'middle', marginRight: '4px' }} />
+              <strong>{item.price} Coins</strong>
+            </p>
+            <button
+              onClick={() => buyItem(item)}
+              disabled={purchasedIds.includes(item.id)}
+              style={{ marginTop: '8px' }}
+            >
+              {purchasedIds.includes(item.id) ? '✅ Purchased' : 'Buy'}
+            </button>
+          </div>
+        ))}
+      </div>
+      <p style={{ textAlign: 'center', marginTop: '10px' }}>{message}</p>
+      <div style={{ textAlign: 'center', marginTop: '20px' }}>
+        <button onClick={() => window.location.href = '/dashboard'}>
+          🔙 Back to Dashboard
+        </button>
+      </div>
     </div>
   );
 }
