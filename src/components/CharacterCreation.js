@@ -1,3 +1,5 @@
+// src/components/CharacterCreation.js
+
 import React, { useState } from 'react';
 import { auth, db } from '../firebase';
 import { setDoc, doc } from 'firebase/firestore';
@@ -94,7 +96,11 @@ function CharacterCreation() {
               <img src={cls.avatar} alt={cls.label} width="50" />
               <p>{cls.description}</p>
               <p><strong>Starting Item:</strong></p>
-              <p>{cls.startingItem.name}<br></br>({cls.startingItem.effect})</p>
+              <p>
+                {cls.startingItem.name}
+                <br />
+                ({cls.startingItem.effect})
+              </p>
             </div>
           ))}
         </div>
@@ -106,7 +112,9 @@ function CharacterCreation() {
               <tbody>
                 {Object.entries(classOptions[selectedClass].startingStats).map(([stat, value]) => (
                   <tr key={stat}>
-                    <td style={{ padding: '4px 8px', fontWeight: 'bold' }}>{stat.charAt(0).toUpperCase() + stat.slice(1)}</td>
+                    <td style={{ padding: '4px 8px', fontWeight: 'bold' }}>
+                      {stat.charAt(0).toUpperCase() + stat.slice(1)}
+                    </td>
                     <td style={{ padding: '4px 8px' }}>{value}</td>
                   </tr>
                 ))}

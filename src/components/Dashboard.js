@@ -1,137 +1,173 @@
-import React, { useEffect, useState } from 'react';
-import { auth, db } from '../firebase';
+// src/components/Dashboard.js
+
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { doc, onSnapshot, updateDoc, increment } from 'firebase/firestore';
-import { signOut } from 'firebase/auth';
+import { auth, db } from '../firebase';
+import { doc, updateDoc, increment } from 'firebase/firestore';
+import UserContext from '../contexts/UserContext';
+
 import CharacterCard from './CharacterCard';
 import Inventory from './Inventory';
-import { updateStatsFromFitness } from '../utils/updateStatsFromFitness';
 
-function Dashboard() {
-  const [userData, setUserData] = useState(null);
-  const [showInventory, setShowInventory] = useState(false);
-  const [hasUpdatedStats, setHasUpdatedStats] = useState(false);
+export default function Dashboard() {
   const navigate = useNavigate();
+  const { userData, loading } = useContext(UserContext);
+  const [showInventory, setShowInventory] = useState(false);
 
+  // Redirect to /login if not authenticated
   useEffect(() => {
-    const user = auth.currentUser;
-    if (!user) return navigate('/login');
+    if (!loading && !userData) {
+      navigate('/login');
+    }
+  }, [loading, userData, navigate]);
 
-    const userRef = doc(db, 'users', user.uid);
+  // Daily update: lastActivity, playtime, and fitness‐based stat bumps
+  useEffect(() => {
+    if (loading || !userData) return;
 
-    const unsubscribe = onSnapshot(userRef, async (snap) => {
-      if (!snap.exists()) {
-        console.warn('No user document found. Redirecting...');
-        return navigate('/character-creation');
+    const uid = userData.uid;
+    const userRef = doc(db, 'users', uid);
+    const localKey = `lastDailyUpdate_${uid}`;
+    const lastChecked = localStorage.getItem(localKey);
+    const today = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
+
+    if (lastChecked !== today) {
+      const updates = {
+        lastActivity: today,
+        playtime: increment(0.25),
+      };
+
+      const { fitness } = userData;
+      if (fitness) {
+        const bumps = {
+          'stats.agility': Math.floor(fitness.miles / 5),
+          'stats.strength': Math.floor(fitness.strengthSessions / 3),
+          'stats.vitality': Math.floor(fitness.workouts / 4),
+          'stats.intellect': Math.floor(fitness.sleepDays / 5),
+          'stats.endurance': Math.floor(fitness.waterDays / 5),
+          'stats.luck': Math.floor(fitness.steps / 10000),
+        };
+        Object.entries(bumps).forEach(([key, val]) => {
+          if (val > 0) {
+            updates[key] = increment(val);
+          }
+        });
       }
 
-      const data = snap.data();
-      setUserData({ ...data, id: user.uid });
+      updateDoc(userRef, updates)
+        .then(() => {
+          localStorage.setItem(localKey, today);
+        })
+        .catch((err) => {
+          console.error('Error applying daily updates:', err);
+        });
+    }
+  }, [loading, userData]);
 
-      if (!hasUpdatedStats) {
-        setHasUpdatedStats(true);
-        const today = new Date().toISOString().split('T')[0];
-
-        const updateFields = {};
-        if (data.lastActivity !== today) {
-          updateFields.lastActivity = today;
-          updateFields.playtime = increment(0.25);
-        }
-
-        if (Object.keys(updateFields).length > 0) {
-          await updateDoc(userRef, updateFields);
-        }
-
-        await updateStatsFromFitness(user.uid);
-      }
-    });
-
-    return () => unsubscribe();
-  }, [navigate, hasUpdatedStats]);
-
-  const handleLogout = async () => {
-    await signOut(auth);
-    navigate('/login');
-  };
-
+  // Equip an item: write to Firestore immediately
   const handleEquip = async (item) => {
-    const type = item.type.toLowerCase();
-    const userRef = doc(db, 'users', userData.id);
-    await updateDoc(userRef, {
-      [`equipped.${type}`]: item
-    });
+    if (!userData) return;
+    const userRef = doc(db, 'users', userData.uid);
+
+    try {
+      // Use lowercase for the slot key
+      await updateDoc(userRef, {
+        ['equipped.' + item.type.toLowerCase()]: item,
+      });
+    } catch (err) {
+      console.error('Equip failed:', err);
+    }
   };
 
-  const handleUnequip = async (type) => {
-    const userRef = doc(db, 'users', userData.id);
-    await updateDoc(userRef, {
-      [`equipped.${type}`]: null
-    });
+  // Unequip an item: set that slot to null in Firestore
+  const handleUnequip = async (slot) => {
+    if (!userData) return;
+    const userRef = doc(db, 'users', userData.uid);
+
+    try {
+      await updateDoc(userRef, {
+        ['equipped.' + slot]: null,
+      });
+    } catch (err) {
+      console.error('Unequip failed:', err);
+    }
   };
 
-  if (!userData) return <p>Loading your character...</p>;
+  // Logout
+  const handleLogout = async () => {
+    try {
+      await auth.signOut();
+      navigate('/login');
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
+  };
+
+  if (loading || !userData) {
+    return <div className="text-center p-4">Loading your hero…</div>;
+  }
 
   return (
-    <div style={{ padding: '2rem', position: 'relative' }}>
-      {/* Logout Button */}
-      <button
-        onClick={handleLogout}
-        style={{
-          position: 'absolute',
-          top: '10px',
-          right: '10px',
-          padding: '8px 14px',
-          fontSize: '14px',
-          backgroundColor: '#e74c3c',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '4px',
-          cursor: 'pointer'
-        }}
-      >
-        🔒 Logout
-      </button>
-
-      {/* Top Right Nav Buttons (Shop, Quests) */}
-      <div style={{
-        position: 'absolute',
-        top: '10px',
-        right: '120px',
-        display: 'flex',
-        gap: '10px'
-      }}>
-        <button onClick={() => navigate('/shop')}>🛒 Shop</button>
-        <button onClick={() => navigate('/quests')}>🗺️ Quests</button>
-      </div>
-
-      <h1 style={{ textAlign: 'center' }}>Welcome back, Hero 🧙</h1>
-      <h3 style={{ textAlign: 'center' }}>{userData.username}</h3>
-
-      <CharacterCard user={userData} />
-
-      {/* Inventory Toggle - now inside Card Area */}
-      <div style={{ textAlign: 'center', marginTop: '10px' }}>
-        <button onClick={() => setShowInventory(!showInventory)} style={{ marginTop: '10px' }}>
-          {showInventory ? '🧰 Hide Inventory' : '🧰 Show Inventory'}
+    <div className="w-full min-h-screen p-6 bg-gray-50 flex flex-col items-center">
+      {/* Top-right navigation emojis */}
+      <div className="w-full flex justify-end mb-4">
+        <button
+          onClick={() => navigate('/shop')}
+          className="text-2xl p-2 rounded hover:bg-gray-200"
+          aria-label="Go to Shop"
+        >
+          🛒
+        </button>
+        <button
+          onClick={() => navigate('/quests')}
+          className="text-2xl p-2 rounded hover:bg-gray-200"
+          aria-label="View Quests"
+        >
+          📜
+        </button>
+        <button
+          onClick={handleLogout}
+          className="text-2xl p-2 rounded hover:bg-gray-200"
+          aria-label="Logout"
+        >
+          🔓
         </button>
       </div>
 
-      <div
-        style={{
-          maxHeight: showInventory ? '1000px' : '0',
-          overflow: 'hidden',
-          transition: 'max-height 0.5s ease'
-        }}
-      >
-        <Inventory
-          items={userData.inventory || []}
-          equipped={userData.equipped || {}}
-          onEquip={handleEquip}
-          onUnequip={handleUnequip}
-        />
+      {/* Centered Welcome Message */}
+      <h1 className="text-2xl font-semibold mb-6 text-center">
+        Welcome back, Hero 🧙 {userData.username}
+      </h1>
+
+      {/* Centered Character Card */}
+      <div className="mb-6">
+        <CharacterCard user={userData} />
       </div>
+
+      {/* Centered Show/Hide Inventory Button */}
+      <div className="mb-6">
+        <button
+          onClick={() => setShowInventory((prev) => !prev)}
+          className="flex items-center px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-900"
+        >
+          <span className="text-xl mr-2">📦</span>
+          {showInventory ? 'Hide Inventory' : 'Show Inventory'}
+        </button>
+      </div>
+
+      {/* Inventory Section */}
+      {showInventory && (
+        <div className="w-full flex justify-center mb-6">
+          <div className="max-w-xl w-full">
+            <Inventory
+              items={userData.inventory || []}
+              equipped={userData.equipped || {}}
+              onEquip={handleEquip}
+              onUnequip={handleUnequip}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
-export default Dashboard;

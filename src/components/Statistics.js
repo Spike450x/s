@@ -1,8 +1,6 @@
 // src/pages/Statistics.js
-import React, { useEffect, useState } from 'react';
-import { auth, db } from '../firebase';
-import { doc, getDoc } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom';
+
+import React, { useContext } from 'react';
 import { Line, Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -11,97 +9,151 @@ import {
   PointElement,
   LineElement,
   BarElement,
-  Tooltip,
-  Legend
+  Title as ChartTitle,
+  Tooltip as ChartTooltip,
+  Legend as ChartLegend,
 } from 'chart.js';
+import UserContext from '../contexts/UserContext';
+import { useNavigate } from 'react-router-dom';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Tooltip, Legend);
+// Register all required Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  ChartTitle,
+  ChartTooltip,
+  ChartLegend
+);
 
-function Statistics() {
-  const [stats, setStats] = useState(null);
+export default function Statistics() {
   const navigate = useNavigate();
+  const { userData, loading } = useContext(UserContext);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      const user = auth.currentUser;
-      if (!user) return navigate('/login');
+  if (loading || !userData) {
+    return <div className="text-center p-4">Loading statistics…</div>;
+  }
 
-      const snap = await getDoc(doc(db, 'users', user.uid));
-      if (!snap.exists()) return;
+  // Extract relevant arrays from userData
+  const xpHistory = userData.xpHistory || [];
+  const battleHistory = userData.battleHistory || [];
+  const questHistory = userData.questHistory || [];
 
-      const data = snap.data();
-      const xpHistory = (data.xpHistory || []).sort((a, b) => new Date(a.date) - new Date(b.date));
-      const battleHistory = data.battleHistory || [];
+  // Format lastActivity as a human-readable date
+  const lastActivityDate = userData.lastActivity
+    ? new Date(userData.lastActivity).toLocaleDateString()
+    : 'N/A';
 
-      const wins = battleHistory.filter(b => b.result === 'win').length;
-      const losses = battleHistory.filter(b => b.result === 'loss').length;
+  // Build data for charts (e.g., XP Over Time)
+  const xpLabels = xpHistory.map((entry) =>
+    new Date(entry.date).toLocaleDateString()
+  );
+  const xpDataSet = xpHistory.map((entry) => entry.xp);
 
-      setStats({
-        lastActivity: data.lastActivity || 'Unknown',
-        playtime: data.playtime || 0,
-        questsCompleted: data.questsCompleted || [],
-        monstersDefeated: data.monstersDefeated || 0,
-        xpHistory,
-        battleResults: { wins, losses }
-      });
-    };
-
-    fetchStats();
-  }, [navigate]);
-
-  if (!stats) return <p>Loading stats...</p>;
-
-  const xpChart = {
-    labels: stats.xpHistory.map(entry => entry.date),
-    datasets: [{
-      label: 'XP Gained',
-      data: stats.xpHistory.map(entry => entry.xp),
-      borderColor: '#42a5f5',
-      backgroundColor: '#bbdefb',
-      tension: 0.3,
-      fill: true
-    }]
-  };
-
-  const battleChart = {
-    labels: ['Wins', 'Losses'],
-    datasets: [{
-      label: 'Battles',
-      data: [stats.battleResults.wins, stats.battleResults.losses],
-      backgroundColor: ['#66bb6a', '#ef5350']
-    }]
-  };
+  const wins = battleHistory.filter((b) => b.result === 'win').length;
+  const losses = battleHistory.filter((b) => b.result === 'loss').length;
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
-      <h2>📊 Player Statistics</h2>
-      <p><strong>Last Activity:</strong> {stats.lastActivity}</p>
-      <p><strong>Total Playtime:</strong> {stats.playtime} hrs</p>
-      <p><strong>Monsters Defeated:</strong> {stats.monstersDefeated}</p>
+    <div className="p-4 max-w-3xl mx-auto">
+      <h2 className="text-xl font-semibold mb-4">Statistics</h2>
 
-      <h3>📈 XP Gained Over Time</h3>
-      <Line data={xpChart} />
+      {/* Summary Section */}
+      <div className="mb-6">
+        <p>
+          Last Activity: <span className="font-medium">{lastActivityDate}</span>
+        </p>
+        <p>
+          Total Playtime:{' '}
+          <span className="font-medium">{userData.playtime} hours</span>
+        </p>
+        <p>
+          Monsters Defeated:{' '}
+          <span className="font-medium">{userData.monstersDefeated || 0}</span>
+        </p>
+      </div>
 
-      <h3>🧟‍♂️ Battle Outcomes</h3>
-      <Bar data={battleChart} />
+      {/* XP Over Time Line Chart */}
+      <div className="mb-8">
+        <h3 className="font-semibold mb-2">XP Gained Over Time</h3>
+        <Line
+          data={{
+            labels: xpLabels,
+            datasets: [
+              {
+                label: 'XP Gained',
+                data: xpDataSet,
+                fill: false,
+                borderColor: '#3b82f6',
+                tension: 0.1,
+              },
+            ],
+          }}
+          options={{
+            scales: {
+              x: { title: { display: true, text: 'Date' } },
+              y: { title: { display: true, text: 'XP' } },
+            },
+            plugins: {
+              legend: { display: false },
+            },
+          }}
+        />
+      </div>
 
-      <h3>📜 Completed Quests</h3>
-      {stats.questsCompleted.length > 0 ? (
-        <ul>
-          {stats.questsCompleted.map((quest, i) => (
-            <li key={i}>{quest}</li>
-          ))}
+      {/* Battle Outcomes Bar Chart */}
+      <div className="mb-8">
+        <h3 className="font-semibold mb-2">Battle Outcomes</h3>
+        <Bar
+          data={{
+            labels: ['Wins', 'Losses'],
+            datasets: [
+              {
+                label: 'Count',
+                data: [wins, losses],
+                backgroundColor: ['#10b981', '#ef4444'],
+              },
+            ],
+          }}
+          options={{
+            scales: {
+              y: { beginAtZero: true },
+            },
+            plugins: {
+              legend: { display: false },
+            },
+          }}
+        />
+      </div>
+
+      {/* Completed Quests List */}
+      <div className="mb-8">
+        <h3 className="font-semibold mb-2">Quests Completed</h3>
+        <ul className="list-disc ml-6">
+          {questHistory.map((entry) => {
+            const key = `${entry.name}-${entry.date}`;
+            return (
+              <li key={key}>
+                {entry.name} —{' '}
+                <span className="text-gray-600">
+                  {new Date(entry.date).toLocaleDateString()}
+                </span>
+              </li>
+            );
+          })}
         </ul>
-      ) : (
-        <p>No quests completed yet.</p>
-      )}
+      </div>
 
-      <br />
-      <button onClick={() => navigate('/dashboard')}>
-        🔙 Back to Dashboard
-      </button>
+      {/* Back to Dashboard */}
+      <div className="text-center mt-6">
+        <button
+          className="px-4 py-2 bg-gray-800 text-white rounded"
+          onClick={() => navigate('/dashboard')}
+        >
+          Back to Dashboard
+        </button>
+      </div>
     </div>
   );
 }
-
-export default Statistics;

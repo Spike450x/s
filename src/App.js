@@ -1,46 +1,43 @@
+// src/App.js
+
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { UserProvider } from './contexts/UserContext';
+
 import Signup from './components/Signup';
 import Login from './components/Login';
 import CharacterCreation from './components/CharacterCreation';
 import Dashboard from './components/Dashboard';
 import Shop from './components/Shop';
 import Quests from './components/Quests';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from './firebase';
-import { useEffect, useState } from 'react';
 import Statistics from './components/Statistics';
 
 function App() {
-  const [user, setUser] = useState(null);
-  const [authChecked, setAuthChecked] = useState(false);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setAuthChecked(true);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  if (!authChecked) {
-    return <div>Loading...</div>;
-  }
-
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Navigate to="/signup" />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/character-creation" element={<CharacterCreation />} />
-        <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/login" />} />
-        <Route path="/shop" element={user ? <Shop /> : <Navigate to="/login" />} />
-        <Route path="/quests" element={user ? <Quests /> : <Navigate to="/login" />} />
-        <Route path="/stats" element={<Statistics />} />
-      </Routes>
-    </Router>
+    <UserProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* If someone hits "/" exactly, send them to "/login" */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
+
+          {/* Sign-Up and Login */}
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login />} />
+
+          {/* Character Creation (only after signup) */}
+          <Route path="/character-creation" element={<CharacterCreation />} />
+
+          {/* Main App (only after login) */}
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/shop" element={<Shop />} />
+          <Route path="/quests" element={<Quests />} />
+          <Route path="/stats" element={<Statistics />} />
+
+          {/* Anything else → redirect to "/login" */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </UserProvider>
   );
 }
 
