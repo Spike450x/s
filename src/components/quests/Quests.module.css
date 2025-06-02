@@ -1,0 +1,86 @@
+/* --------------------------------- */
+/* Quests.module.css                 */
+/* --------------------------------- */
+
+/* Outer container (centers text, adds padding) */
+.container {
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Grid wrapper for quest cards */
+.questGrid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* Individual quest card styling */
+.questCard {
+  width: 250px;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #fff; /* default */
+  border: 1px solid #ccc;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+/* Hover/focus effect: lift card and deepen shadow */
+.questCard:hover,
+.questCard:focus-within {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Applied when quest is completed (light green) */
+.questCardCompleted {
+  background-color: #d4edda;
+}
+
+/* “Complete Quest” / “Completed” button */
+.questButton {
+  margin-top: 10px;
+  padding: 8px 16px;
+  border: none;
+  background-color: #2563eb;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background-color 0.2s ease;
+}
+
+.questButton:hover,
+.questButton:focus {
+  background-color: #1d4ed8;
+}
+
+/* Feedback message below the grid */
+.message {
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
+/* “Back to Dashboard” button container */
+.backWrapper {
+  margin-top: 1.5rem;
+}
+
+/* Back button styling */
+.backButton {
+  padding: 8px 16px;
+  border: none;
+  background-color: #374151; /* dark gray */
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background-color 0.2s ease;
+}
+
+.backButton:hover,
+.backButton:focus {
+  background-color: #1f2937; /* darker */
+}

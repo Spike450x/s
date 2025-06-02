@@ -1,4 +1,6 @@
-import { doc, getDoc, updateDoc, increment } from 'firebase/firestore';
+// File: src/utils/updateXPAndLevel.js
+
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 
 function getXPForNextLevel(level) {
@@ -14,7 +16,6 @@ export async function updateXPAndLevel(userId, gainedXP) {
   xp += gainedXP;
 
   let leveledUp = false;
-
   while (xp >= getXPForNextLevel(level)) {
     xp -= getXPForNextLevel(level);
     level += 1;

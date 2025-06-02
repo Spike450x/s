@@ -1,3 +1,5 @@
+// src/utils/colors.js
+
 export const rarityColors = {
   common: '#b0bec5',
   uncommon: '#4caf50',

@@ -1,0 +1,71 @@
+/* ------------------------------------- */
+/* CharacterCard.module.css             */
+/* ------------------------------------- */
+
+/* Outer container (border radius, padding, margin, max-width, centering) */
+.container {
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative; /* to allow absolute positioning of tooltips */
+}
+
+/* Avatar image centering and vertical margin */
+.avatar {
+  display: block;
+  margin: 0.625rem auto; /* 10px */
+  border-radius: 50%;
+}
+
+/* Health/XP bar container styles */
+.barContainer {
+  background: #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  height: 12px;
+}
+
+/* Health/XP fill styles (width & background-color set inline) */
+.barFill {
+  height: 12px;
+  transition: width 0.3s ease;
+}
+
+/* Each stat line (margin between, relative for tooltip) */
+.statItem {
+  margin-bottom: 4px;
+  position: relative;
+}
+
+/* Stat label (bold + pointer cursor) */
+.statLabel {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Tooltip wrapper for stats (absolute positioning) */
+.tooltipWrapper {
+  position: absolute;
+  top: -28px;
+  left: 0;
+}
+
+/* Each equipped-item line (margin + relative) */
+.itemContainer {
+  margin-bottom: 4px;
+  position: relative;
+}
+
+/* Default “[None]” label style */
+.noneLabel {
+  color: #888;
+}
+
+/* Item label (pointer cursor + bold; color set inline) */
+.itemLabel {
+  cursor: pointer;
+  font-weight: bold;
+}

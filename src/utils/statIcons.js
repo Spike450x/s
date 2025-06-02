@@ -1,3 +1,5 @@
+// src/utils/statIcons.js
+
 const statIcons = {
   strength: '💪',
   agility: '🏃',
@@ -16,4 +18,7 @@ const statTooltips = {
   luck: 'Affects critical hits, loot, and evasion.'
 };
 
-export default { statIcons, statTooltips };
+// Assign to a named variable before exporting
+const statData = { statIcons, statTooltips };
+
+export default statData;

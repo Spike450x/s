@@ -1,3 +1,5 @@
+// src/utils/classOptions.js
+
 const classOptions = {
   warrior: {
     label: 'Warrior',

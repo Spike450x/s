@@ -1,4 +1,5 @@
-// utils/logXPGain.js
+// File: src/utils/logXPGain.js
+
 import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { db } from '../firebase';
 

@@ -1,0 +1,72 @@
+/* src/components/Shop.module.css */
+
+.container {
+  padding: 2rem;
+}
+
+/* Shop item grid */
+.itemGrid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* centers the item cards */
+  gap: 20px;
+}
+
+/* Individual item card */
+.itemCard {
+  width: 220px;
+  padding: 12px;
+  border-radius: 10px;
+  background-color: #fff;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  position: relative;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+/* Hover effect: lift card and deepen shadow */
+.itemCard:hover,
+.itemCard:focus-within {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.buyButton {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background-color: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.buyButton:hover,
+.buyButton:focus {
+  background-color: #1d4ed8;
+}
+
+/* Footer container to center the back button */
+.footer {
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Back-to-dashboard button styling */
+.backButton {
+  padding: 8px 16px;
+  font-size: 1rem;
+  background-color: #1f2937;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.backButton:hover,
+.backButton:focus {
+  background-color: #111827;
+}

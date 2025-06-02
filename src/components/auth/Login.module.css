@@ -1,0 +1,68 @@
+/* ------------------------------------- */
+/* Login.module.css                      */
+/* ------------------------------------- */
+
+/* Outer container for the login form */
+.loginContainer {
+  max-width: 400px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Input fields (email/password) */
+.inputField {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  outline: none;
+}
+
+/* Input focus state */
+.inputField:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3);
+}
+
+/* Submit button */
+.loginButton {
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 10px;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.loginButton:hover,
+.loginButton:focus {
+  background-color: #2980b9;
+}
+
+/* Error message text */
+.errorText {
+  color: red;
+  margin-top: 12px;
+}
+
+/* Signup link below form */
+.signupWrapper {
+  margin-top: 1rem;
+}
+
+.signupLink {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.signupLink:hover,
+.signupLink:focus {
+  text-decoration: underline;
+}

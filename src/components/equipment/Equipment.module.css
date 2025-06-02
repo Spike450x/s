@@ -1,0 +1,22 @@
+/* -------------------------------- */
+/* Equipment.module.css             */
+/* -------------------------------- */
+
+.container {
+  margin-top: 1rem;
+}
+
+.title {
+  font-size: 1.25rem; /* 20px */
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.listItem {
+  margin-bottom: 0.25rem;
+}

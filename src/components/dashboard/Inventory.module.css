@@ -1,0 +1,62 @@
+/* src/components/dashboard/Inventory.module.css */
+
+/* Wrapper for all inventory content, centers filter + grid */
+.inventoryContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* center everything horizontally */
+}
+
+/* Centered filter dropdown section */
+.filterSection {
+  margin-bottom: 1rem;
+  text-align: center; /* centers the label + dropdown */
+}
+
+/* Shrink-wrap and center the grid of item cards */
+.itemGrid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* centers cards inside the grid */
+  gap: 1rem;
+
+  width: fit-content; /* only as wide as its cards */
+  margin: 0 auto;     /* center horizontally */
+}
+
+.itemCard {
+  padding: 1rem;
+  border-radius: 8px;
+  width: 180px;
+  background-color: #f4f4f4;
+  text-align: center;
+  position: relative;
+  transition: transform 0.1s ease;
+}
+
+.itemCard:hover {
+  transform: translateY(-2px);
+}
+
+.itemName {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.itemButton {
+  margin-top: 0.75rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  background-color: #2563eb;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background-color 0.2s ease;
+}
+
+.itemButton:hover,
+.itemButton:focus {
+  background-color: #1d4ed8;
+}

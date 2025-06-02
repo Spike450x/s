@@ -1,0 +1,78 @@
+/* src/components/dashboard/Dashboard.module.css */
+
+/* (Overall Dashboard container is styled via global utility classes) */
+.dashboardContainer {
+  /* Layout handled by .min-h-screen .p-6 .bg-gray-50 .overflow-x-hidden */
+}
+
+/* Top-right navigation bar */
+.navBar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Icon buttons in nav */
+.iconButton {
+  font-size: 1.75rem;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  background: transparent;
+  cursor: pointer;
+  border: none;
+  transition: color 0.2s ease;
+}
+
+.iconButton:hover,
+.iconButton:focus {
+  color: #2563eb; /* slight tint on hover/focus */
+}
+
+/* Hero welcome title */
+.heroTitle {
+  width: 100%;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+/* Generic wrapper to center content */
+.centerWrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Show/Hide Inventory toggle button */
+.inventoryToggleBtn {
+  display: inline-flex;
+  align-items: center;
+  background-color: #1f2937; /* dark gray */
+  color: #ffffff;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.inventoryToggleBtn:hover,
+.inventoryToggleBtn:focus {
+  background-color: #111827; /* darker on hover */
+}
+
+/* Icon inside the inventory toggle button */
+.inventoryToggleIcon {
+  font-size: 1.25rem;
+  margin-right: 0.5rem;
+}
+
+/* Adjusted Inventory container to shrink-wrap and center its contents */
+.inventoryContainer {
+  display: block;       /* allow width: fit-content to take effect */
+  width: fit-content;   /* shrink to exactly the width of its child (Inventory) */
+  margin: 0 auto 1.5rem;/* center horizontally, plus bottom margin */
+}

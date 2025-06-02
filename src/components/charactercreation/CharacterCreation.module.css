@@ -1,0 +1,78 @@
+/* ------------------------------------- */
+/* CharacterCreation.module.css          */
+/* ------------------------------------- */
+
+.formContainer {
+  /* No layout-specific rules here – global .p-8 and .text-center handle that */
+}
+
+.formLabel {
+  display: block;
+  margin-bottom: 1rem; /* space under the label */
+  font-weight: 500;
+}
+
+.formInput {
+  margin-top: 0.5rem;
+  display: block;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  outline: none;
+}
+
+.formInput:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3);
+}
+
+.classGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.classOptionCard {
+  padding: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 180px;
+  text-align: center;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.classOptionCardSelected {
+  border: 3px solid #3498db;
+  /* background-color set inline (e.g. `${cls.color}22`) */
+}
+
+.classOptionCardUnselected {
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+}
+
+.statsContainer {
+  margin-top: 1.5rem;
+}
+
+.statsHeading {
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.statsTable {
+  width: 100%;
+  border-collapse: collapse; /* or use global .table-collapse */
+}
+
+.statsTableCellLabel {
+  padding: 4px 8px;
+  font-weight: 600;
+}
+
+.statsTableCellValue {
+  padding: 4px 8px;
+}

@@ -1,0 +1,16 @@
+/* --------------------------------- */
+/* Tooltip.module.css                */
+/* --------------------------------- */
+
+.tooltipBox {
+  background-color: rgba(0, 0, 0, 0.85); /* Nearly opaque black */
+  color: #fff;                          /* White text */
+  padding: 6px 10px;                    /* Padding around text */
+  border-radius: 4px;                   /* Rounded corners */
+  font-size: 12px;                      /* Slightly smaller font */
+  position: absolute;                   /* Positioned relative to nearest ancestor */
+  transform: translateY(-110%);         /* Move tooltip above the parent element */
+  white-space: nowrap;                  /* Prevent line breaks */
+  z-index: 1000;                        /* Ensure it appears on top */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
+}

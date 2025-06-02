@@ -1,3 +1,5 @@
+// File: src/utils/updateStatsFromFitness.js
+
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import classOptions from '../utils/classOptions';

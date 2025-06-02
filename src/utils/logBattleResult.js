@@ -1,4 +1,5 @@
-// utils/logBattleResult.js
+// File: src/utils/logBattleResult.js
+
 import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { db } from '../firebase';
 

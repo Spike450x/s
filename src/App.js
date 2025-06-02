@@ -1,43 +1,45 @@
 // src/App.js
 
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { UserProvider } from './contexts/UserContext';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
-import Signup from './components/Signup';
-import Login from './components/Login';
-import CharacterCreation from './components/CharacterCreation';
-import Dashboard from './components/Dashboard';
-import Shop from './components/Shop';
-import Quests from './components/Quests';
-import Statistics from './components/Statistics';
+// Auth-related screens (still in src/components/)
+import Login from './components/auth/Login';
+import Signup from './components/auth/Signup';
+
+// Character creation (still in src/components/)
+import CharacterCreation from './components/charactercreation/CharacterCreation';
+
+// Dashboard (moved into dashboard/ subfolder)
+import Dashboard from './components/dashboard/Dashboard';
+
+// Other feature screens (still in src/components/)
+import Quests from './components/quests/Quests';
+import Shop from './components/shop/Shop';
+import Statistics from './components/statistics/Statistics';
 
 function App() {
   return (
-    <UserProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* If someone hits "/" exactly, send them to "/login" */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
+    <Routes>
+      {/* Redirect root to /login */}
+      <Route path="/" element={<Navigate to="/login" replace />} />
 
-          {/* Sign-Up and Login */}
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/login" element={<Login />} />
+      {/* Auth flows */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
 
-          {/* Character Creation (only after signup) */}
-          <Route path="/character-creation" element={<CharacterCreation />} />
+      {/* Character creation */}
+      <Route path="/character-creation" element={<CharacterCreation />} />
 
-          {/* Main App (only after login) */}
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/quests" element={<Quests />} />
-          <Route path="/stats" element={<Statistics />} />
+      {/* Main app */}
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/quests" element={<Quests />} />
+      <Route path="/shop" element={<Shop />} />
+      <Route path="/stats" element={<Statistics />} />
 
-          {/* Anything else → redirect to "/login" */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      </BrowserRouter>
-    </UserProvider>
+      {/* Catch-all → redirect to login */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
+    </Routes>
   );
 }
 
