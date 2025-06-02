@@ -1,5 +1,3 @@
-// src/pages/Statistics.js
-
 import React, { useContext } from 'react';
 import { Line, Bar } from 'react-chartjs-2';
 import {
@@ -16,7 +14,7 @@ import {
 import UserContext from '../contexts/UserContext';
 import { useNavigate } from 'react-router-dom';
 
-// Register all required Chart.js components
+// Register necessary Chart.js components for rendering Line and Bar charts
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -28,41 +26,58 @@ ChartJS.register(
   ChartLegend
 );
 
+/**
+ * Statistics page component
+ *
+ * Displays:
+ * - A summary of last activity date, total playtime, and monsters defeated.
+ * - A Line chart showing XP gained over time.
+ * - A Bar chart showing battle outcomes (wins vs. losses).
+ * - A list of completed quests with their completion dates.
+ *
+ * Uses:
+ * - UserContext to retrieve `userData` (which includes xpHistory, battleHistory, questHistory, etc.) and `loading` state.
+ * - useNavigate to return to the dashboard.
+ */
 export default function Statistics() {
   const navigate = useNavigate();
   const { userData, loading } = useContext(UserContext);
 
+  // Show loading message until userData is available
   if (loading || !userData) {
     return <div className="text-center p-4">Loading statistics…</div>;
   }
 
-  // Extract relevant arrays from userData
-  const xpHistory = userData.xpHistory || [];
-  const battleHistory = userData.battleHistory || [];
-  const questHistory = userData.questHistory || [];
+  // Extract arrays for charts and lists
+  const xpHistory = userData.xpHistory || [];           // Array of { source, xp, date }
+  const battleHistory = userData.battleHistory || [];   // Array of { monster, result, date }
+  const questHistory = userData.questHistory || [];     // Array of { name, date }
 
-  // Format lastActivity as a human-readable date
+  // Format lastActivity (ISO string) to a human-readable date; fallback to 'N/A'
   const lastActivityDate = userData.lastActivity
     ? new Date(userData.lastActivity).toLocaleDateString()
     : 'N/A';
 
-  // Build data for charts (e.g., XP Over Time)
+  // Prepare data for XP Over Time Line chart
   const xpLabels = xpHistory.map((entry) =>
     new Date(entry.date).toLocaleDateString()
   );
   const xpDataSet = xpHistory.map((entry) => entry.xp);
 
+  // Count battle outcomes for the Bar chart
   const wins = battleHistory.filter((b) => b.result === 'win').length;
   const losses = battleHistory.filter((b) => b.result === 'loss').length;
 
   return (
     <div className="p-4 max-w-3xl mx-auto">
+      {/* Page title */}
       <h2 className="text-xl font-semibold mb-4">Statistics</h2>
 
-      {/* Summary Section */}
+      {/* Summary Section: Last Activity, Playtime, Monsters Defeated */}
       <div className="mb-6">
         <p>
-          Last Activity: <span className="font-medium">{lastActivityDate}</span>
+          Last Activity:{' '}
+          <span className="font-medium">{lastActivityDate}</span>
         </p>
         <p>
           Total Playtime:{' '}
@@ -70,7 +85,9 @@ export default function Statistics() {
         </p>
         <p>
           Monsters Defeated:{' '}
-          <span className="font-medium">{userData.monstersDefeated || 0}</span>
+          <span className="font-medium">
+            {userData.monstersDefeated || 0}
+          </span>
         </p>
       </div>
 
@@ -96,7 +113,7 @@ export default function Statistics() {
               y: { title: { display: true, text: 'XP' } },
             },
             plugins: {
-              legend: { display: false },
+              legend: { display: false }, // Hide legend since only one dataset
             },
           }}
         />
@@ -112,13 +129,13 @@ export default function Statistics() {
               {
                 label: 'Count',
                 data: [wins, losses],
-                backgroundColor: ['#10b981', '#ef4444'],
+                backgroundColor: ['#10b981', '#ef4444'], // Green for wins, red for losses
               },
             ],
           }}
           options={{
             scales: {
-              y: { beginAtZero: true },
+              y: { beginAtZero: true }, // Always start y-axis at zero
             },
             plugins: {
               legend: { display: false },
@@ -132,6 +149,7 @@ export default function Statistics() {
         <h3 className="font-semibold mb-2">Quests Completed</h3>
         <ul className="list-disc ml-6">
           {questHistory.map((entry) => {
+            // Use a combination of quest name and date as a unique key
             const key = `${entry.name}-${entry.date}`;
             return (
               <li key={key}>
@@ -145,7 +163,7 @@ export default function Statistics() {
         </ul>
       </div>
 
-      {/* Back to Dashboard */}
+      {/* Back to Dashboard Button */}
       <div className="text-center mt-6">
         <button
           className="px-4 py-2 bg-gray-800 text-white rounded"

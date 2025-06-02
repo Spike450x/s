@@ -1,5 +1,3 @@
-// src/components/Shop.js
-
 import React, { useEffect, useState, useContext } from 'react';
 import { doc, updateDoc, arrayUnion, increment } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -8,8 +6,24 @@ import UserContext from '../contexts/UserContext';
 import itemIcons from '../utils/itemIcons';
 import { rarityColors } from '../utils/colors';
 
+// URL to a coin emoji icon, used in price displays
 const coinIcon = 'https://img.icons8.com/emoji/48/coin-emoji.png';
 
+/**
+ * SHOP_ITEMS
+ *
+ * A hardcoded array of items available in the shop. Each item includes:
+ * - id: unique identifier (string)
+ * - name: display name
+ * - type: slot type ("Weapon", "Boots", "Consumable", etc.)
+ * - rarity: string indicating rarity ("Common", "Rare", "Epic", etc.)
+ * - effect: string describing the item’s effect
+ * - stat: which stat it affects (for reference)
+ * - bonus: numeric bonus amount (for reference)
+ * - price: cost in coins (number)
+ * - description: tooltip text
+ * - icon: URL to an icon image
+ */
 const SHOP_ITEMS = [
   {
     id: 'sword_of_flame',
@@ -49,53 +63,88 @@ const SHOP_ITEMS = [
   },
 ];
 
+/**
+ * Shop component
+ *
+ * Displays shop inventory, shows the user’s current coin balance, and lets them purchase items.
+ * Purchased items are added to the user’s Firestore inventory and deducted from their coins.
+ *
+ * Context:
+ * - Uses UserContext to retrieve userData (includes uid, coins, inventory, etc.).
+ *
+ * State:
+ * - purchasedIds: array of item IDs that the user already owns (to disable Buy button)
+ * - message: string for feedback messages (e.g., purchase success/failure)
+ */
 function Shop() {
   const navigate = useNavigate();
-  const { userData } = useContext(UserContext);
-  const [purchasedIds, setPurchasedIds] = useState([]);
-  const [message, setMessage] = useState('');
+  const { userData } = useContext(UserContext); // Grab real-time user data from context
+  const [purchasedIds, setPurchasedIds] = useState([]); // Track IDs of items already purchased
+  const [message, setMessage] = useState('');           // Feedback message below shop
 
-  // Initialize purchasedIds when userData loads or changes
+  /**
+   * Initialize purchasedIds whenever userData changes
+   * so that items already in the user’s inventory appear as "Purchased".
+   */
   useEffect(() => {
     if (!userData) return;
     const inventory = userData.inventory || [];
+    // Map inventory items to their IDs for quick lookup
     setPurchasedIds(inventory.map((item) => item.id));
   }, [userData]);
 
+  /**
+   * buyItem
+   *
+   * Handles purchasing logic for a given item:
+   * - If user lacks enough coins, show error message.
+   * - Otherwise, optimistically add item.id to purchasedIds and show success message.
+   * - Update Firestore: decrement coins by item.price, add item object to inventory array.
+   * - If Firestore update fails, roll back purchasedIds and show failure message.
+   *
+   * @param {object} item - the item object being purchased
+   */
   const buyItem = async (item) => {
     if (!userData || purchasedIds.includes(item.id)) return;
 
+    // Check coin balance
     if ((userData.coins || 0) < item.price) {
       setMessage('❌ Not enough coins!');
       return;
     }
 
-    // Optimistic UI update
+    // Optimistic UI update: mark as purchased immediately
     setPurchasedIds((prev) => [...prev, item.id]);
     setMessage(`✅ Bought ${item.name}`);
 
     const userRef = doc(db, 'users', userData.uid);
 
     try {
+      // Firestore transaction: decrement coins and add item to inventory
       await updateDoc(userRef, {
         coins: increment(-item.price),
         inventory: arrayUnion(item),
       });
-      // Rely on UserContext to update userData.coins & userData.inventory
+      // Rely on UserContext subscription to refresh userData.coins & userData.inventory
     } catch (err) {
       console.error('❌ Failed to buy:', err);
-      // Rollback local state if Firestore fails
+      // Roll back optimistic update if Firestore write fails
       setPurchasedIds((prev) => prev.filter((id) => id !== item.id));
       setMessage('⚠️ Purchase failed.');
     }
   };
 
+  // Show loading message until userData is available
   if (!userData) return <p>Loading shop...</p>;
 
   return (
     <div>
+      {/* Title */}
       <h2 style={{ textAlign: 'center' }}>🛒 Shop</h2>
+      {/* Display user’s current coin balance */}
       <p style={{ textAlign: 'center' }}>💰 Coins: {userData.coins || 0}</p>
+
+      {/* Shop item cards container */}
       <div
         style={{
           display: 'flex',
@@ -118,8 +167,11 @@ function Shop() {
               textAlign: 'center',
             }}
           >
+            {/* Item Icon */}
             <img src={item.icon} alt={item.name} width="40" />
+            {/* Item Name */}
             <h3 style={{ margin: '10px 0 5px' }}>{item.name}</h3>
+            {/* Rarity, styled by color */}
             <p
               style={{
                 margin: '0',
@@ -129,8 +181,10 @@ function Shop() {
             >
               {item.rarity.toUpperCase()}
             </p>
+            {/* Description & Effect */}
             <p style={{ marginTop: '8px' }}>{item.description}</p>
             <p>{item.effect}</p>
+            {/* Price, with coin icon */}
             <p>
               <img
                 src={coinIcon}
@@ -140,6 +194,7 @@ function Shop() {
               />
               <strong>{item.price} Coins</strong>
             </p>
+            {/* Buy / Purchased Button */}
             <button
               onClick={() => buyItem(item)}
               disabled={purchasedIds.includes(item.id)}
@@ -150,7 +205,11 @@ function Shop() {
           </div>
         ))}
       </div>
+
+      {/* Feedback message below the items */}
       <p style={{ textAlign: 'center', marginTop: '10px' }}>{message}</p>
+
+      {/* Back to Dashboard Button */}
       <div style={{ textAlign: 'center', marginTop: '20px' }}>
         <button onClick={() => navigate('/dashboard')}>
           🔙 Back to Dashboard
