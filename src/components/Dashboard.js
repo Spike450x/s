@@ -9,8 +9,9 @@ import { updateStatsFromFitness } from '../utils/updateStatsFromFitness';
 
 function Dashboard() {
   const [userData, setUserData] = useState(null);
-  const navigate = useNavigate();
+  const [showInventory, setShowInventory] = useState(false);
   const [hasUpdatedStats, setHasUpdatedStats] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const user = auth.currentUser;
@@ -54,54 +55,25 @@ function Dashboard() {
   };
 
   const handleEquip = async (item) => {
-    try {
-      if (!userData?.id) {
-        console.warn('User ID is undefined, cannot equip item.');
-        return;
-      }
-
-      const type = (item.type || '').toLowerCase().replace(/[^a-z0-9]/gi, '');
-
-      const allowedKeys = [
-        'name', 'type', 'rarity', 'effect', 'description',
-        'strength', 'intellect', 'agility', 'vitality', 'luck',
-        'endurance', 'icon'
-      ];
-      const sanitizedItem = Object.fromEntries(
-        Object.entries(item).filter(([key, value]) =>
-          allowedKeys.includes(key) && value !== undefined)
-      );
-
-      const userRef = doc(db, 'users', userData.id);
-      await updateDoc(userRef, {
-        [`equipped.${type}`]: sanitizedItem
-      });
-    } catch (err) {
-      console.error('Equip error:', err.message || err);
-    }
+    const type = item.type.toLowerCase();
+    const userRef = doc(db, 'users', userData.id);
+    await updateDoc(userRef, {
+      [`equipped.${type}`]: item
+    });
   };
 
   const handleUnequip = async (type) => {
-    try {
-      if (!userData?.id) {
-        console.warn('User ID is undefined, cannot unequip item.');
-        return;
-      }
-
-      const key = (type || '').toLowerCase().replace(/[^a-z0-9]/gi, '');
-      const userRef = doc(db, 'users', userData.id);
-      await updateDoc(userRef, {
-        [`equipped.${key}`]: null
-      });
-    } catch (err) {
-      console.error('Unequip error:', err.message || err);
-    }
+    const userRef = doc(db, 'users', userData.id);
+    await updateDoc(userRef, {
+      [`equipped.${type}`]: null
+    });
   };
 
   if (!userData) return <p>Loading your character...</p>;
 
   return (
     <div style={{ padding: '2rem', position: 'relative' }}>
+      {/* Logout Button */}
       <button
         onClick={handleLogout}
         style={{
@@ -120,21 +92,37 @@ function Dashboard() {
         🔒 Logout
       </button>
 
+      {/* Top Right Nav Buttons (Shop, Quests) */}
+      <div style={{
+        position: 'absolute',
+        top: '10px',
+        right: '120px',
+        display: 'flex',
+        gap: '10px'
+      }}>
+        <button onClick={() => navigate('/shop')}>🛒 Shop</button>
+        <button onClick={() => navigate('/quests')}>🗺️ Quests</button>
+      </div>
+
       <h1 style={{ textAlign: 'center' }}>Welcome back, Hero 🧙</h1>
       <h3 style={{ textAlign: 'center' }}>{userData.username}</h3>
 
       <CharacterCard user={userData} />
 
-      <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
-        <button onClick={() => navigate('/shop')} style={{ margin: '0 10px', padding: '10px 20px', fontSize: '16px' }}>
-          🛒 Go to Shop
-        </button>
-        <button onClick={() => navigate('/quests')} style={{ margin: '0 10px', padding: '10px 20px', fontSize: '16px' }}>
-          🗺️ View Quests
+      {/* Inventory Toggle - now inside Card Area */}
+      <div style={{ textAlign: 'center', marginTop: '10px' }}>
+        <button onClick={() => setShowInventory(!showInventory)} style={{ marginTop: '10px' }}>
+          {showInventory ? '🧰 Hide Inventory' : '🧰 Show Inventory'}
         </button>
       </div>
 
-      <div style={{ marginTop: '2rem' }}>
+      <div
+        style={{
+          maxHeight: showInventory ? '1000px' : '0',
+          overflow: 'hidden',
+          transition: 'max-height 0.5s ease'
+        }}
+      >
         <Inventory
           items={userData.inventory || []}
           equipped={userData.equipped || {}}

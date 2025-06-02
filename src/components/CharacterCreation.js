@@ -11,17 +11,13 @@ function CharacterCreation() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted');
 
     const user = auth.currentUser;
     if (!user) return navigate('/login');
-    console.log('Current user:', user);
-
     if (!username || !selectedClass) return alert('Fill in all fields');
 
     const classData = classOptions[selectedClass];
     if (!classData) return alert('Invalid class selection');
-
     const startingItem = classData.startingItem;
 
     const userData = {
@@ -56,7 +52,6 @@ function CharacterCreation() {
     };
 
     try {
-      console.log('Writing user to Firestore...', userData);
       await setDoc(doc(db, 'users', user.uid), userData);
       navigate('/dashboard');
     } catch (err) {
@@ -91,16 +86,34 @@ function CharacterCreation() {
                 borderRadius: '8px',
                 cursor: 'pointer',
                 backgroundColor: selectedClass === key ? `${cls.color}22` : '#f9f9f9',
-                width: '180px'
+                width: '180px',
+                textAlign: 'center'
               }}
             >
               <h4>{cls.label}</h4>
               <img src={cls.avatar} alt={cls.label} width="50" />
               <p>{cls.description}</p>
-              <p>Starting Item: {cls.startingItem.name}</p>
+              <p><strong>Starting Item:</strong></p>
+              <p>{cls.startingItem.name}<br></br>({cls.startingItem.effect})</p>
             </div>
           ))}
         </div>
+
+        {selectedClass && (
+          <div style={{ marginTop: '1.5rem' }}>
+            <h4>📊 Starting Stats</h4>
+            <table style={{ marginTop: '0.5rem', borderCollapse: 'collapse' }}>
+              <tbody>
+                {Object.entries(classOptions[selectedClass].startingStats).map(([stat, value]) => (
+                  <tr key={stat}>
+                    <td style={{ padding: '4px 8px', fontWeight: 'bold' }}>{stat.charAt(0).toUpperCase() + stat.slice(1)}</td>
+                    <td style={{ padding: '4px 8px' }}>{value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         <br />
         <button type="submit">🚀 Start Adventure</button>
