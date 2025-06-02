@@ -1,9 +1,6 @@
-// src/components/dashboard/CharacterCard.js
-
 import React, { useState, useMemo } from 'react';
 import { rarityColors, classColors, xpBarColors } from '../../utils/colors';
 import statData from '../../utils/statIcons';
-// Corrected path to Tooltip
 import Tooltip from '../tooltip/Tooltip';
 import { getEffectiveStats } from '../../utils/stats';
 import { useNavigate } from 'react-router-dom';
@@ -27,7 +24,8 @@ function CharacterCard({ user }) {
   const maxHealth = user.health?.max ?? 1;
   const hpPercentage = Math.min((currentHealth / maxHealth) * 100, 100);
 
-  const equippedItems = user.equipped || {};
+  // Wrap user.equipped in useMemo so it doesn’t create a new {} each render
+  const equippedItems = useMemo(() => user.equipped || {}, [user.equipped]);
 
   const effectiveStats = useMemo(
     () => getEffectiveStats(user.stats || {}, equippedItems),
@@ -85,7 +83,7 @@ function CharacterCard({ user }) {
               className={styles.itemLabel}
               style={{ color: rarityColors[item.rarity?.toLowerCase()] }}
             >
-              {item.name} ({item.rarity}) - {item.effect}
+              {item.name} ({item.rarity}) – {item.effect}
             </span>
             {isVisible && (
               <div
@@ -151,7 +149,6 @@ function CharacterCard({ user }) {
         </small>
       </div>
 
-      {/* Stats Section */}
       <h3>🧬 Stats</h3>
       {renderStat('luck', 'Luck')}
       {renderStat('endurance', 'Endurance')}
@@ -160,14 +157,12 @@ function CharacterCard({ user }) {
       {renderStat('agility', 'Agility')}
       {renderStat('strength', 'Strength')}
 
-      {/* Equipped Gear */}
       <h3>🧤 Equipped Gear</h3>
       {renderEquippedItem('weapon', '🗡️ Weapon')}
       {renderEquippedItem('armor', '🛡️ Armor')}
       {renderEquippedItem('boots', '🥾 Boots')}
       {renderEquippedItem('consumable', '🧪 Consumable')}
 
-      {/* Button to statistics page */}
       <div className="text-center mt-4">
         <button onClick={() => navigate('/stats')}>📊 View Statistics</button>
       </div>

@@ -1,53 +1,36 @@
-// src/components/quests/Quests.js
-
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { doc, updateDoc, arrayUnion, increment } from 'firebase/firestore';
-import { db } from '../../firebase';     // note the "../../"
+import { db } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
 import UserContext from '../../contexts/UserContext';
 
 import styles from './Quests.module.css';
-// Corrected path to global index.css
 import '../../index.css';
 
-/**
- * Quests component
- *
- * Displays a list of four hardcoded daily quests. When a user completes a quest,
- * it updates Firestore to increment XP, coins, and add the quest name to both
- * questsCompleted and questHistory arrays; also adds an entry to xpHistory.
- *
- * Props: none (uses UserContext to grab userData)
- *
- * Local State:
- * - completed: array of quest IDs that have already been completed today
- * - processing: boolean that prevents double-click while a Firestore update is in progress
- * - message: feedback string shown after completing or failing a quest
- *
- * Effects:
- * - On mount or when userData changes, seed the `completed` state from userData.questsCompleted.
- */
+/* 
+  Static quest definitions moved outside component so useEffect doesn’t need to list them as dependencies 
+*/
+const QUEST_DEFINITIONS = [
+  { id: 1, name: 'Drink 8 cups of water', xp: 20, coins: 10 },
+  { id: 2, name: 'Run 1 mile', xp: 30, coins: 15 },
+  { id: 3, name: 'Sleep 7+ hours', xp: 25, coins: 12 },
+  { id: 4, name: 'Do 30 pushups', xp: 35, coins: 20 },
+];
+
 function Quests() {
   const navigate = useNavigate();
   const { userData } = useContext(UserContext);
 
   const [completed, setCompleted] = useState([]); // IDs of quests already done
-  const [processing, setProcessing] = useState(false); // Disable button during update
-  const [message, setMessage] = useState(''); // Feedback message
+  const [processing, setProcessing] = useState(false);
+  const [message, setMessage] = useState('');
   const debounceRef = useRef(null);
-
-  const quests = [
-    { id: 1, name: 'Drink 8 cups of water', xp: 20, coins: 10 },
-    { id: 2, name: 'Run 1 mile', xp: 30, coins: 15 },
-    { id: 3, name: 'Sleep 7+ hours', xp: 25, coins: 12 },
-    { id: 4, name: 'Do 30 pushups', xp: 35, coins: 20 },
-  ];
 
   useEffect(() => {
     if (!userData) return;
     const completedNames = userData.questsCompleted || [];
     setCompleted(
-      quests
+      QUEST_DEFINITIONS
         .filter((q) => completedNames.includes(q.name))
         .map((q) => q.id)
     );
@@ -90,7 +73,7 @@ function Quests() {
       <h2>🗺️ Daily Quests</h2>
 
       <div className={styles.questGrid}>
-        {quests.map((quest) => {
+        {QUEST_DEFINITIONS.map((quest) => {
           const isDone = completed.includes(quest.id);
           return (
             <div
