@@ -1,3 +1,5 @@
+// src/components/dashboard/Dashboard.js
+
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../../firebase';
@@ -113,14 +115,16 @@ export default function Dashboard() {
         <button
           onClick={() => navigate('/shop')}
           className={styles.iconButton}
-          aria-label="Go to Shop"
+          aria-label="Arcane Shop"
+          title="Arcane Shop"
         >
           🛒
         </button>
         <button
           onClick={() => navigate('/quests')}
           className={styles.iconButton}
-          aria-label="View Quests"
+          aria-label="Daily Quests"
+          title="Daily Quests"
         >
           📜
         </button>
@@ -128,6 +132,7 @@ export default function Dashboard() {
           onClick={handleLogout}
           className={styles.iconButton}
           aria-label="Logout"
+          title="Logout"
         >
           🔓
         </button>
@@ -135,7 +140,7 @@ export default function Dashboard() {
 
       {/* Welcome message */}
       <h1 className={styles.heroTitle}>
-        Welcome back, Hero 🧙 {userData.username}
+        Welcome Back, Hero 🧙
       </h1>
 
       {/* CharacterCard centered */}

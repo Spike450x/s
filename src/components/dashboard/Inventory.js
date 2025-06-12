@@ -9,7 +9,7 @@ import '../../index.css';
 /**
  * Inventory component
  *
- * Displays all items in the user's inventory. Allows filtering by rarity,
+ * Displays all items in the user's inventory. Allows filtering by rarity and type,
  * and equips or unequips items when the corresponding button is clicked.
  *
  * Props:
@@ -20,38 +20,62 @@ import '../../index.css';
  * - onUnequip: function(slotKey: string) => void
  */
 function Inventory({ items, equipped, onEquip, onUnequip }) {
-  const [filter, setFilter] = useState('all');
+  const [rarityFilter, setRarityFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
 
-  const handleChange = (e) => {
-    setFilter(e.target.value);
+  const handleRarityChange = (e) => {
+    setRarityFilter(e.target.value);
   };
+
+  const handleTypeChange = (e) => {
+    setTypeFilter(e.target.value);
+  };
+
+  // Compute filtered items based on both filters
+  const filteredItems = items.filter((item) => {
+    const matchesRarity =
+      rarityFilter === 'all' ? true : item.rarity?.toLowerCase() === rarityFilter;
+    const matchesType =
+      typeFilter === 'all' ? true : item.type.toLowerCase() === typeFilter;
+    return matchesRarity && matchesType;
+  });
 
   return (
     <div className={styles.inventoryContent}>
       <h2>🎒 Inventory</h2>
 
-      {/* Centered filter section */}
+      {/* Filter section with two dropdowns, centered */}
       <div className={styles.filterSection}>
-        <label>Filter by Rarity: </label>
-        <select onChange={handleChange} value={filter}>
-          <option value="all">All</option>
-          {Object.keys(rarityColors).map((rarity) => (
-            <option key={rarity} value={rarity}>
-              {rarity.charAt(0).toUpperCase() + rarity.slice(1)}
-            </option>
-          ))}
-        </select>
+        <label style={{ marginRight: '1rem' }}>
+          Filter by Rarity:{' '}
+          <select onChange={handleRarityChange} value={rarityFilter}>
+            <option value="all">All</option>
+            {Object.keys(rarityColors).map((rarity) => (
+              <option key={rarity} value={rarity}>
+                {rarity.charAt(0).toUpperCase() + rarity.slice(1)}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label>
+          Filter by Type:{' '}
+          <select onChange={handleTypeChange} value={typeFilter}>
+            <option value="all">All</option>
+            <option value="weapon">Weapon</option>
+            <option value="armor">Armor</option>
+            <option value="boots">Boots</option>
+            <option value="consumable">Consumable</option>
+          </select>
+        </label>
       </div>
 
-      {/* Shrink-wrap and center the grid of item cards */}
-      <div className={styles.itemGrid}>
-        {items
-          .filter((item) =>
-            filter === 'all'
-              ? true
-              : item.rarity?.toLowerCase() === filter
-          )
-          .map((item) => {
+      {/* If no items match both filters, show message */}
+      {filteredItems.length === 0 ? (
+        <p className="text-center">No items match these filters.</p>
+      ) : (
+        <div className={styles.itemGrid}>
+          {filteredItems.map((item) => {
             const slotKey = item.type.toLowerCase();
             const equippedItem = equipped?.[slotKey] || null;
 
@@ -106,7 +130,8 @@ function Inventory({ items, equipped, onEquip, onUnequip }) {
               </div>
             );
           })}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
