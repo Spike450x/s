@@ -1,22 +1,22 @@
-// src/components/auth/Signup.js
-
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
-import { auth } from '../../firebase'; // updated path
+import { auth } from '../../firebase';
 
 function Signup() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const emailRef = useRef();
+  const passwordRef = useRef();
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    console.log('handleSignup called');
-
     setError('');
+
+    const email = emailRef.current?.value.trim();
+    const password = passwordRef.current?.value;
+
     if (!email || !password) {
       setError('Please enter both email and password.');
       return;
@@ -27,8 +27,20 @@ function Signup() {
       await createUserWithEmailAndPassword(auth, email, password);
       navigate('/character-creation');
     } catch (err) {
-      console.error('Firebase auth error:', err);
-      setError('Signup failed: ' + err.message);
+      console.error('Firebase auth error:', err.code);
+      switch (err.code) {
+        case 'auth/email-already-in-use':
+          setError('This email is already in use.');
+          break;
+        case 'auth/invalid-email':
+          setError('The email address is badly formatted.');
+          break;
+        case 'auth/weak-password':
+          setError('Password should be at least 6 characters.');
+          break;
+        default:
+          setError('Signup failed. Please try again.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -40,12 +52,8 @@ function Signup() {
       <form onSubmit={handleSignup}>
         <input
           type="email"
+          ref={emailRef}
           placeholder="Email"
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-            setError('');
-          }}
           autoComplete="email"
           style={{ padding: '10px', width: '100%', marginBottom: '10px' }}
           required
@@ -53,12 +61,8 @@ function Signup() {
         <br />
         <input
           type="password"
+          ref={passwordRef}
           placeholder="Password"
-          value={password}
-          onChange={(e) => {
-            setPassword(e.target.value);
-            setError('');
-          }}
           autoComplete="new-password"
           style={{ padding: '10px', width: '100%', marginBottom: '15px' }}
           required
@@ -77,10 +81,9 @@ function Signup() {
           {isSubmitting ? 'Creating Account…' : 'Create Account'}
         </button>
       </form>
+
       {error && (
-        <p style={{ color: 'red', marginTop: '12px' }}>
-          {error}
-        </p>
+        <div style={{ color: 'red', marginTop: '12px' }}>{error}</div>
       )}
     </div>
   );

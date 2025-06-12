@@ -1,21 +1,14 @@
-/* ------------------------------------- */
-/* CharacterCreation.module.css          */
-/* ------------------------------------- */
-
-.formContainer {
-  /* No layout-specific rules here – global .p-8 and .text-center handle that */
-}
-
 .formLabel {
   display: block;
-  margin-bottom: 1rem; /* space under the label */
+  margin-bottom: 1rem;
   font-weight: 500;
 }
 
 .formInput {
   margin-top: 0.5rem;
   display: block;
-  width: 100%;
+  width: 250px;      /* reduced width */
+  max-width: 100%;   /* responsive on narrow screens */
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -28,51 +21,83 @@
   box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3);
 }
 
+/* Container holding all class cards, left-aligned */
 .classGrid {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
+  justify-content: flex-start; /* cards start at left */
 }
 
+/* Base styling for each class card */
 .classOptionCard {
   padding: 1rem;
   border-radius: 8px;
   cursor: pointer;
   width: 180px;
   text-align: center;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.classOptionCardSelected {
-  border: 3px solid #3498db;
-  /* background-color set inline (e.g. `${cls.color}22`) */
+/* Lift effect on hover/focus */
+.classOptionCard:hover,
+.classOptionCard:focus {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+/* Unselected: light gray background, thin border */
 .classOptionCardUnselected {
   border: 1px solid #ccc;
   background-color: #f9f9f9;
+}
+
+/* Selected: border and tinted background from CSS variable */
+.classOptionCardSelected {
+  border: 3px solid #3498db;
+  background-color: var(--selected-bg);
 }
 
 .statsContainer {
   margin-top: 1.5rem;
 }
 
-.statsHeading {
-  font-size: 1.125rem; /* text-lg */
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-}
-
+/* Remove centering; left-align the table */
 .statsTable {
-  width: 100%;
-  border-collapse: collapse; /* or use global .table-collapse */
+  border-collapse: collapse;
+  /* no margin: auto here, so it stays left-aligned */
 }
 
-.statsTableCellLabel {
-  padding: 4px 8px;
+.statsTable td {
+  padding: 4px 8px; /* tighter spacing */
+}
+
+.statsTable td:first-child {
+  text-align: left;
   font-weight: 600;
 }
 
-.statsTableCellValue {
-  padding: 4px 8px;
+.statsTable td:last-child {
+  text-align: left;
+  /* no extra indent */
+}
+
+/* Enlarged, centered “Start Adventure” button */
+.startButton {
+  display: block;            
+  margin: 1.5rem auto 0;     
+  padding: 0.75rem 2rem;     
+  font-size: 1.125rem;       
+  font-weight: 500;          
+  background-color: #16a34a; 
+  color: #ffffff;
+  border: none;
+  border-radius: 0.375rem;   
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.startButton:hover,
+.startButton:focus {
+  background-color: #15803d; 
 }

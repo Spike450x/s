@@ -1,37 +1,46 @@
+// src/components/dashboard/CharacterCard.js
+
 import React, { useState, useMemo } from 'react';
-import { rarityColors, classColors, xpBarColors } from '../../utils/colors';
-import statData from '../../utils/statIcons';
+import { useNavigate } from 'react-router-dom';
 import Tooltip from '../tooltip/Tooltip';
 import { getEffectiveStats } from '../../utils/stats';
-import { useNavigate } from 'react-router-dom';
-
+import { rarityColors, classColors, xpBarColors } from '../../utils/colors';
+import statData from '../../utils/statIcons';
 import styles from './CharacterCard.module.css';
-import '../../index.css';
 
 const { statIcons, statTooltips } = statData;
 
 function CharacterCard({ user }) {
   const navigate = useNavigate();
 
+  // Determine class‐based colors
   const classColor = classColors[user.class] || '#ccc';
+  const bgColor = `${classColor}22`;
   const xpColor = xpBarColors[user.class] || '#2196f3';
 
+  // XP calculations
   const currentXP = user.xp || 0;
   const xpNeeded = Math.floor(50 * Math.pow(user.level || 1, 2));
   const xpPercentage = Math.min((currentXP / xpNeeded) * 100, 100);
 
+  // HP calculations
   const currentHealth = user.health?.current ?? 0;
   const maxHealth = user.health?.max ?? 1;
   const hpPercentage = Math.min((currentHealth / maxHealth) * 100, 100);
 
-  // Wrap user.equipped in useMemo so it doesn’t create a new {} each render
-  const equippedItems = useMemo(() => user.equipped || {}, [user.equipped]);
+  // Wrap the “equipped or empty object” logic in its own useMemo
+  const equippedItems = useMemo(() => {
+    return user.equipped || {};
+  }, [user.equipped]);
 
+  // Compute effective stats (base + gear) with useMemo
+  // Now equippedItems is stable unless user.equipped changes
   const effectiveStats = useMemo(
     () => getEffectiveStats(user.stats || {}, equippedItems),
     [user.stats, equippedItems]
   );
 
+  // Track which stat or item tooltip is visible
   const [visibleStat, setVisibleStat] = useState(null);
   const [visibleTooltip, setVisibleTooltip] = useState(null);
 
@@ -40,54 +49,56 @@ function CharacterCard({ user }) {
     setVisibleTooltip(null);
   };
 
-  const toggleStatTooltip = (stat, e) => {
+  const toggleStatTooltip = (statKey, e) => {
     e.stopPropagation();
-    setVisibleStat((prev) => (prev === stat ? null : stat));
+    setVisibleStat((prev) => (prev === statKey ? null : statKey));
   };
 
-  const toggleItemTooltip = (type, e) => {
+  const toggleItemTooltip = (slot, e) => {
     e.stopPropagation();
-    setVisibleTooltip((prev) => (prev === type ? null : type));
+    setVisibleTooltip((prev) => (prev === slot ? null : slot));
   };
 
-  const renderStat = (stat, label) => (
-    <div className={styles.statItem}>
+  // Helper to render a single stat
+  const renderStat = (statKey, label) => (
+    <li className={styles.statItem} key={statKey}>
       <span
         className={styles.statLabel}
-        onClick={(e) => toggleStatTooltip(stat, e)}
+        onClick={(e) => toggleStatTooltip(statKey, e)}
       >
-        {statIcons[stat]} {label}: {effectiveStats[stat] ?? 0}
+        {statIcons[statKey]} {label}: {effectiveStats[statKey] ?? 0}
       </span>
-      {visibleStat === stat && (
+      {visibleStat === statKey && (
         <div
-          className={styles.tooltipWrapper}
+          className={styles.tooltipContainer}
           onClick={(e) => e.stopPropagation()}
         >
-          <Tooltip>{statTooltips[stat]}</Tooltip>
+          <Tooltip>{statTooltips[statKey]}</Tooltip>
         </div>
       )}
-    </div>
+    </li>
   );
 
+  // Helper to render one equipped slot
   const renderEquippedItem = (type, label) => {
     const item = equippedItems[type];
     const isVisible = visibleTooltip === type;
 
     return (
-      <div key={type} className={styles.itemContainer}>
-        <strong>{label}:</strong>{' '}
+      <div className={styles.equippedItem} key={type}>
+        <span className={styles.equipLabel}>{label}:</span>{' '}
         {item ? (
           <>
             <span
+              className={styles.equipName}
               onClick={(e) => toggleItemTooltip(type, e)}
-              className={styles.itemLabel}
               style={{ color: rarityColors[item.rarity?.toLowerCase()] }}
             >
               {item.name} ({item.rarity}) – {item.effect}
             </span>
             {isVisible && (
               <div
-                className={styles.tooltipWrapper}
+                className={styles.tooltipContainer}
                 onClick={(e) => e.stopPropagation()}
               >
                 <Tooltip>{item.description}</Tooltip>
@@ -95,7 +106,7 @@ function CharacterCard({ user }) {
             )}
           </>
         ) : (
-          <span className={styles.noneLabel}>[None]</span>
+          <span style={{ color: '#888' }}>[None]</span>
         )}
       </div>
     );
@@ -104,30 +115,33 @@ function CharacterCard({ user }) {
   return (
     <div
       onClick={clearTooltips}
-      className={styles.container}
+      className={styles.cardContainer}
       style={{
-        border: `3px solid ${classColor}`,
-        backgroundColor: `${classColor}22`,
+        '--border-color': classColor,
+        '--bg-color': bgColor,
       }}
     >
-      <h2 className="text-center">{user.username}</h2>
-      <img
-        src={user.avatar}
-        alt="avatar"
-        width="80"
-        className={styles.avatar}
-      />
-      <p className="text-center">
+      {/* Username */}
+      <h2 className={styles.username}>{user.username}</h2>
+
+      {/* Avatar (now centered) */}
+      <img src={user.avatar} alt="avatar" className={styles.avatar} />
+
+      {/* Class & Level */}
+      <p className={styles.classLevel}>
         🧙 {user.class.toUpperCase()} | 🏆 Level {user.level}
       </p>
 
       {/* Health Bar */}
-      <div className="my-2">
-        <strong>❤️ HP:</strong>
-        <div className={styles.barContainer}>
+      <div className={styles.barContainer}>
+        <span className={styles.barLabel}>❤️ HP:</span>
+        <div className={styles.barWrapper}>
           <div
             className={styles.barFill}
-            style={{ width: `${hpPercentage}%`, backgroundColor: '#e74c3c' }}
+            style={{
+              width: `${hpPercentage}%`,
+              backgroundColor: '#e74c3c',
+            }}
           />
         </div>
         <small>
@@ -136,12 +150,15 @@ function CharacterCard({ user }) {
       </div>
 
       {/* XP Bar */}
-      <div className="my-2">
-        <strong>📈 XP:</strong>
-        <div className={styles.barContainer}>
+      <div className={styles.barContainer}>
+        <span className={styles.barLabel}>📈 XP:</span>
+        <div className={styles.barWrapper}>
           <div
             className={styles.barFill}
-            style={{ width: `${xpPercentage}%`, backgroundColor: xpColor }}
+            style={{
+              width: `${xpPercentage}%`,
+              backgroundColor: xpColor,
+            }}
           />
         </div>
         <small>
@@ -149,21 +166,26 @@ function CharacterCard({ user }) {
         </small>
       </div>
 
-      <h3>🧬 Stats</h3>
-      {renderStat('luck', 'Luck')}
-      {renderStat('endurance', 'Endurance')}
-      {renderStat('intellect', 'Intellect')}
-      {renderStat('vitality', 'Vitality')}
-      {renderStat('agility', 'Agility')}
-      {renderStat('strength', 'Strength')}
+      {/* Stats Section */}
+      <h3 className={styles.sectionHeading}>🧬 Stats</h3>
+      <ul className={styles.statsList}>
+        {renderStat('luck', 'Luck')}
+        {renderStat('endurance', 'Endurance')}
+        {renderStat('intellect', 'Intellect')}
+        {renderStat('vitality', 'Vitality')}
+        {renderStat('agility', 'Agility')}
+        {renderStat('strength', 'Strength')}
+      </ul>
 
-      <h3>🧤 Equipped Gear</h3>
+      {/* Equipped Gear Section */}
+      <h3 className={styles.gearHeading}>🧤 Equipped Gear</h3>
       {renderEquippedItem('weapon', '🗡️ Weapon')}
       {renderEquippedItem('armor', '🛡️ Armor')}
       {renderEquippedItem('boots', '🥾 Boots')}
       {renderEquippedItem('consumable', '🧪 Consumable')}
 
-      <div className="text-center mt-4">
+      {/* View Statistics Button */}
+      <div style={{ textAlign: 'center', marginTop: '1rem' }}>
         <button onClick={() => navigate('/stats')}>📊 View Statistics</button>
       </div>
     </div>
