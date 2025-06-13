@@ -1,0 +1,502 @@
+{
+  "i1": {
+    "name": "Health Potion",
+    "description": "Restores 25 HP instantly.",
+    "cost": 30,
+    "rarity": "Common",
+    "iconUrl": "/assets/icons/health_potion.png",
+    "statBonuses": { "strength": 0, "dexterity": 0, "stamina": 0, "intelligence": 0, "wisdom": 0, "charisma": 0 },
+    "equipable": false,
+    "type": "consumable"
+  },
+  "i2": {
+    "name": "Stamina Elixir",
+    "description": "Increases stamina recovery by 10% for your next quest.",
+    "cost": 45,
+    "rarity": "Common",
+    "iconUrl": "/assets/icons/stamina_elixir.png",
+    "statBonuses": { "stamina": 2 },
+    "equipable": false,
+    "type": "consumable"
+  },
+  "i3": {
+    "name": "Arcane Mana Potion",
+    "description": "Grants +1 Intelligence buff for your next magic-based quest.",
+    "cost": 50,
+    "rarity": "Uncommon",
+    "iconUrl": "/assets/icons/mana_potion.png",
+    "statBonuses": { "intelligence": 1 },
+    "equipable": false,
+    "type": "consumable"
+  },
+  "i4": {
+    "name": "Hydration Flask",
+    "description": "Auto-logs 32 oz of water for today.",
+    "cost": 40,
+    "rarity": "Common",
+    "iconUrl": "/assets/icons/hydration_flask.png",
+    "statBonuses": { "stamina": 1 },
+    "equipable": false,
+    "type": "consumable"
+  },
+  "i5": {
+    "name": "Protein Bar",
+    "description": "Grants +1 to workout completion (counts as an extra workout).",
+    "cost": 35,
+    "rarity": "Common",
+    "iconUrl": "/assets/icons/protein_bar.png",
+    "statBonuses": {},
+    "equipable": false,
+    "type": "consumable"
+  },
+  "i6": {
+    "name": "Electrolyte Packet",
+    "description": "Reduces water requirement by 16 oz for your next quest.",
+    "cost": 25,
+    "rarity": "Common",
+    "iconUrl": "/assets/icons/electrolyte_packet.png",
+    "statBonuses": {},
+    "equipable": false,
+    "type": "consumable"
+  },
+  "i7": {
+    "name": "Energy Gel",
+    "description": "Instant +0.5 mile run credit.",
+    "cost": 20,
+    "rarity": "Common",
+    "iconUrl": "/assets/icons/energy_gel.png",
+    "statBonuses": {},
+    "equipable": false,
+    "type": "consumable"
+  },
+  "i8": {
+    "name": "Rest Tonic",
+    "description": "Automatically grants 1 additional hour of sleep.",
+    "cost": 50,
+    "rarity": "Uncommon",
+    "iconUrl": "/assets/icons/rest_tonic.png",
+    "statBonuses": {},
+    "equipable": false,
+    "type": "consumable"
+  },
+  "i9": {
+    "name": "Focus Tea",
+    "description": "Boosts Charisma by +1 for your next social quest.",
+    "cost": 30,
+    "rarity": "Common",
+    "iconUrl": "/assets/icons/focus_tea.png",
+    "statBonuses": { "charisma": 1 },
+    "equipable": false,
+    "type": "consumable"
+  },
+  "i10": {
+    "name": "Iron Sword",
+    "description": "A basic blade that grants +5 Strength when equipped.",
+    "cost": 100,
+    "rarity": "Common",
+    "iconUrl": "/assets/icons/iron_sword.png",
+    "statBonuses": { "strength": 5 },
+    "equipable": true,
+    "type": "gear"
+  },
+  "i11": {
+    "name": "Steel Gauntlets",
+    "description": "Sturdy gauntlets granting +3 Strength and +1 Dexterity.",
+    "cost": 120,
+    "rarity": "Uncommon",
+    "iconUrl": "/assets/icons/steel_gauntlets.png",
+    "statBonuses": { "strength": 3, "dexterity": 1 },
+    "equipable": true,
+    "type": "gear"
+  },
+  "i12": {
+    "name": "Leather Boots",
+    "description": "Light boots granting +4 Dexterity.",
+    "cost": 80,
+    "rarity": "Common",
+    "iconUrl": "/assets/icons/leather_boots.png",
+    "statBonuses": { "dexterity": 4 },
+    "equipable": true,
+    "type": "gear"
+  },
+  "i13": {
+    "name": "Mystic Robe",
+    "description": "Enchanted robe granting +3 Intelligence and +2 Wisdom.",
+    "cost": 200,
+    "rarity": "Uncommon",
+    "iconUrl": "/assets/icons/mystic_robe.png",
+    "statBonuses": { "intelligence": 3, "wisdom": 2 },
+    "equipable": true,
+    "type": "gear"
+  },
+  "i14": {
+    "name": "Emberstep Boots",
+    "description": "Boots that grant +2 Dexterity and +1 Stamina if you exceed 8,000 steps.",
+    "cost": 180,
+    "rarity": "Uncommon",
+    "iconUrl": "/assets/icons/emberstep_boots.png",
+    "statBonuses": { "dexterity": 2, "stamina": 1 },
+    "equipable": true,
+    "type": "gear"
+  },
+  "i15": {
+    "name": "Hydra Armor",
+    "description": "Heavy armor granting +5 Stamina and +2 Strength.",
+    "cost": 350,
+    "rarity": "Rare",
+    "iconUrl": "/assets/icons/hydra_armor.png",
+    "statBonuses": { "stamina": 5, "strength": 2 },
+    "equipable": true,
+    "type": "gear"
+  },
+  "i16": {
+    "name": "Phoenix Helm",
+    "description": "A fiery helm granting +2 Intelligence and +3 Wisdom.",
+    "cost": 300,
+    "rarity": "Rare",
+    "iconUrl": "/assets/icons/phoenix_helm.png",
+    "statBonuses": { "intelligence": 2, "wisdom": 3 },
+    "equipable": true,
+    "type": "gear"
+  },
+  "i17": {
+    "name": "Thunderstaff",
+    "description": "A staff crackling with energy granting +4 Intelligence.",
+    "cost": 320,
+    "rarity": "Rare",
+    "iconUrl": "/assets/icons/thunderstaff.png",
+    "statBonuses": { "intelligence": 4 },
+    "equipable": true,
+    "type": "gear"
+  },
+  "i18": {
+    "name": "Ranger's Cape",
+    "description": "Light cape granting +3 Dexterity and +1 Charisma.",
+    "cost": 150,
+    "rarity": "Uncommon",
+    "iconUrl": "/assets/icons/rangers_cape.png",
+    "statBonuses": { "dexterity": 3, "charisma": 1 },
+    "equipable": true,
+    "type": "gear"
+  },
+  "i19": {
+    "name": "Scroll of Fireball",
+    "description": "Casts a powerful fireball—grants +2 Intelligence buff.",
+    "cost": 120,
+    "rarity": "Uncommon",
+    "iconUrl": "/assets/icons/scroll_fireball.png",
+    "statBonuses": { "intelligence": 2 },
+    "equipable": false,
+    "type": "spell"
+  },
+  "i20": {
+    "name": "Scroll of Ice Ward",
+    "description": "Creates an icy barrier—grants +2 Stamina buff.",
+    "cost": 130,
+    "rarity": "Uncommon",
+    "iconUrl": "/assets/icons/scroll_ice_ward.png",
+    "statBonuses": { "stamina": 2 },
+    "equipable": false,
+    "type": "spell"
+  },
+  "i21": {
+    "name": "Scroll of Lightning Strike",
+    "description": "Unleashes lightning—grants +2 Dexterity buff.",
+    "cost": 130,
+    "rarity": "Uncommon",
+    "iconUrl": "/assets/icons/scroll_lightning.png",
+    "statBonuses": { "dexterity": 2 },
+    "equipable": false,
+    "type": "spell"
+  },
+  "i22": {
+    "name": "Healing Scroll",
+    "description": "Restores 50 HP upon use.",
+    "cost": 100,
+    "rarity": "Common",
+    "iconUrl": "/assets/icons/scroll_heal.png",
+    "statBonuses": {},
+    "equipable": false,
+    "type": "spell"
+  },
+  "i23": {
+    "name": "Scroll of Speed Burst",
+    "description": "Temporarily grants +3 Dexterity.",
+    "cost": 140,
+    "rarity": "Rare",
+    "iconUrl": "/assets/icons/scroll_speed.png",
+    "statBonuses": { "dexterity": 3 },
+    "equipable": false,
+    "type": "spell"
+  },
+  "i24": {
+    "name": "Tome of Earth Shield",
+    "description": "Buffs Stamina by +3 for one quest.",
+    "cost": 140,
+    "rarity": "Rare",
+    "iconUrl": "/assets/icons/tome_earth_shield.png",
+    "statBonuses": { "stamina": 3 },
+    "equipable": false,
+    "type": "spell"
+  },
+  "i25": {
+    "name": "Scroll of Wind Dash",
+    "description": "Grants a +3 Dexterity dash.",
+    "cost": 140,
+    "rarity": "Rare",
+    "iconUrl": "/assets/icons/scroll_wind.png",
+    "statBonuses": { "dexterity": 3 },
+    "equipable": false,
+    "type": "spell"
+  },
+  "i26": {
+    "name": "Scroll of Shadow Cloak",
+    "description": "Grants +2 Charisma by melding with shadows.",
+    "cost": 120,
+    "rarity": "Uncommon",
+    "iconUrl": "/assets/icons/scroll_shadow.png",
+    "statBonuses": { "charisma": 2 },
+    "equipable": false,
+    "type": "spell"
+  },
+  "i27": {
+    "name": "Tome of Radiant Light",
+    "description": "Grants +2 Wisdom with divine insight.",
+    "cost": 150,
+    "rarity": "Uncommon",
+    "iconUrl": "/assets/icons/tome_radiant_light.png",
+    "statBonuses": { "wisdom": 2 },
+    "equipable": false,
+    "type": "spell"
+  },
+  "i28": {
+    "name": "Emberfox Egg",
+    "description": "Hatch into a friendly Emberfox—buff: +1 Strength.",
+    "cost": 200,
+    "rarity": "Rare",
+    "iconUrl": "/assets/icons/emberfox_egg.png",
+    "statBonuses": { "strength": 1 },
+    "equipable": false,
+    "type": "pet"
+  },
+  "i29": {
+    "name": "Frostwing Hatchling",
+    "description": "A baby Frostwing—buff: +1 Stamina.",
+    "cost": 200,
+    "rarity": "Rare",
+    "iconUrl": "/assets/icons/frostwing_hatchling.png",
+    "statBonuses": { "stamina": 1 },
+    "equipable": false,
+    "type": "pet"
+  },
+  "i30": {
+    "name": "Ruby Drake Egg",
+    "description": "Hatch a Ruby Drake—buff: +2 Strength, +2 Dexterity.",
+    "cost": 350,
+    "rarity": "Epic",
+    "iconUrl": "/assets/icons/ruby_drake_egg.png",
+    "statBonuses": { "strength": 2, "dexterity": 2 },
+    "equipable": false,
+    "type": "pet"
+  },
+  "i31": {
+    "name": "Celestial Pup Scroll",
+    "description": "Summon a Celestial Pup—buff: +1 Intelligence.",
+    "cost": 180,
+    "rarity": "Uncommon",
+    "iconUrl": "/assets/icons/celestial_pup_scroll.png",
+    "statBonuses": { "intelligence": 1 },
+    "equipable": false,
+    "type": "pet"
+  },
+  "i32": {  
+    "name": "Phantom Kitten Scroll",
+    "description": "Summon a Phantom Kitten—buff: +2 Charisma.",
+    "cost": 180,
+    "rarity": "Uncommon",
+    "iconUrl": "/assets/icons/phantom_kitten_scroll.png",
+    "statBonuses": { "charisma": 2 },
+    "equipable": false,
+    "type": "pet"
+  },
+  "i33": {
+    "name": "Map of the Wilds",
+    "description": "Reveals your next 3 daily quests at a glance.",
+    "cost": 150,
+    "rarity": "Common",
+    "iconUrl": "/assets/icons/map_of_the_wilds.png",
+    "statBonuses": {},
+    "equipable": false,
+    "type": "utility"
+  },
+  "i34": {
+    "name": "Quest Ticket",
+    "description": "Skip one quest you don’t like this week.",
+    "cost": 200,
+    "rarity": "Uncommon",
+    "iconUrl": "/assets/icons/quest_ticket.png",
+    "statBonuses": {},
+    "equipable": false,
+    "type": "utility"
+  },
+  "i35": {
+    "name": "Repair Kit",
+    "description": "Restore durability to all equipped gear.",
+    "cost": 75,
+    "rarity": "Common",
+    "iconUrl": "/assets/icons/repair_kit.png",
+    "statBonuses": {},
+    "equipable": false,
+    "type": "utility"
+  },
+  "i36": {
+    "name": "Backpack Expansion",
+    "description": "Increase your inventory limit by 5 slots.",
+    "cost": 120,
+    "rarity": "Uncommon",
+    "iconUrl": "/assets/icons/backpack_expansion.png",
+    "statBonuses": {},
+    "equipable": false,
+    "type": "utility"
+  },
+  "i37": {
+    "name": "Teleport Rune",
+    "description": "Instantly skip travel to any unlocked region.",
+    "cost": 500,
+    "rarity": "Rare",
+    "iconUrl": "/assets/icons/teleport_rune.png",
+    "statBonuses": {},
+    "equipable": false,
+    "type": "utility"
+  },
+  "i38": {
+    "name": "Timepiece",
+    "description": "Grants +1 effective hour of sleep toward quests.",
+    "cost": 180,
+    "rarity": "Rare",
+    "iconUrl": "/assets/icons/timepiece.png",
+    "statBonuses": {},
+    "equipable": false,
+    "type": "utility"
+  },
+  "i39": {
+    "name": "Compass of Fortune",
+    "description": "Increases coin gains by 5% for one day.",
+    "cost": 250,
+    "rarity": "Epic",
+    "iconUrl": "/assets/icons/compass_of_fortune.png",
+    "statBonuses": {},
+    "equipable": false,
+    "type": "utility"
+  },
+  "i40": {
+    "name": "Lockpick Set",
+    "description": "Grants one extra treasure chest after daily quests.",
+    "cost": 80,
+    "rarity": "Common",
+    "iconUrl": "/assets/icons/lockpick_set.png",
+    "statBonuses": {},
+    "equipable": false,
+    "type": "utility"
+  },
+  "i41": {
+    "name": "Portable Shrine",
+    "description": "Grants a bonus daily quest slot.",
+    "cost": 300,
+    "rarity": "Legendary",
+    "iconUrl": "/assets/icons/portable_shrine.png",
+    "statBonuses": {},
+    "equipable": false,
+    "type": "utility"
+  },
+  "i42": {
+    "name": "Enchanted Quill",
+    "description": "Automatically logs today’s fitness stats.",
+    "cost": 85,
+    "rarity": "Common",
+    "iconUrl": "/assets/icons/enchanted_quill.png",
+    "statBonuses": {},
+    "equipable": false,
+    "type": "utility"
+  },
+  "i43": {
+    "name": "Greater Health Tonic",
+    "description": "Restores 50 HP instantly.",
+    "cost": 60,
+    "rarity": "Uncommon",
+    "iconUrl": "/assets/icons/greater_health_tonic.png",
+    "statBonuses": {},
+    "equipable": false,
+    "type": "consumable"
+  },
+  "i44": {
+    "name": "Greater Stamina Elixir",
+    "description": "Increases stamina recovery by 15% for your next quest.",
+    "cost": 90,
+    "rarity": "Rare",
+    "iconUrl": "/assets/icons/greater_stamina_elixir.png",
+    "statBonuses": { "stamina": 3 },
+    "equipable": false,
+    "type": "consumable"
+  },
+  "i45": {
+    "name": "Arcane Ink",
+    "description": "Grants +1 Intelligence toward your lore journal entries.",
+    "cost": 85,
+    "rarity": "Common",
+    "iconUrl": "/assets/icons/arcane_ink.png",
+    "statBonuses": { "intelligence": 1 },
+    "equipable": false,
+    "type": "utility"
+  },
+  "i46": {
+    "name": "Pet Treat",
+    "description": "Boosts your pet’s happiness by +2.",
+    "cost": 40,
+    "rarity": "Common",
+    "iconUrl": "/assets/icons/pet_treat.png",
+    "statBonuses": {},
+    "equipable": false,
+    "type": "consumable"
+  },
+  "i47": {
+    "name": "Mystic Bell",
+    "description": "Rings with arcane tones—buffs Charisma by +3 when equipped.",
+    "cost": 110,
+    "rarity": "Uncommon",
+    "iconUrl": "/assets/icons/mystic_bell.png",
+    "statBonuses": { "charisma": 3 },
+    "equipable": true,
+    "type": "gear"
+  },
+  "i48": {
+    "name": "Boots of Swiftness",
+    "description": "Grants +5 Dexterity when equipped.",
+    "cost": 200,
+    "rarity": "Rare",
+    "iconUrl": "/assets/icons/boots_of_swiftness.png",
+    "statBonuses": { "dexterity": 5 },
+    "equipable": true,
+    "type": "gear"
+  },
+  "i49": {
+    "name": "Cloak of Invisibility",
+    "description": "Grants +3 Dexterity and +2 Charisma when equipped.",
+    "cost": 350,
+    "rarity": "Epic",
+    "iconUrl": "/assets/icons/cloak_of_invisibility.png",
+    "statBonuses": { "dexterity": 3, "charisma": 2 },
+    "equipable": true,
+    "type": "gear"
+  },
+  "i50": {
+    "name": "Crown of Wisdom",
+    "description": "Grants +5 Wisdom when equipped.",
+    "cost": 400,
+    "rarity": "Legendary",
+    "iconUrl": "/assets/icons/crown_of_wisdom.png",
+    "statBonuses": { "wisdom": 5 },
+    "equipable": true,
+    "type": "gear"
+  }
+}
