@@ -1,47 +1,50 @@
+// src/components/quests/Quests.js
+
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { doc, updateDoc, arrayUnion, increment } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
 import UserContext from '../../contexts/UserContext';
 
+import { getGlobalDailyQuests } from '../../utils/globalDailyUtils';
 import styles from './Quests.module.css';
 import '../../index.css';
 
-/* 
-  Static quest definitions moved outside component so useEffect doesn’t need to list them as dependencies 
-*/
-const QUEST_DEFINITIONS = [
-  { id: 1, name: 'Drink 8 cups of water', xp: 20, coins: 10 },
-  { id: 2, name: 'Run 1 mile',           xp: 30, coins: 15 },
-  { id: 3, name: 'Sleep 7+ hours',       xp: 25, coins: 12 },
-  { id: 4, name: 'Do 30 pushups',        xp: 35, coins: 20 },
-];
-
 function Quests() {
-  const navigate    = useNavigate();
+  const navigate = useNavigate();
   const { userData } = useContext(UserContext);
 
-  // IDs of quests the user has already completed
-  const [completed,  setCompleted]  = useState([]);
+  const [quests, setQuests] = useState([]);
+  const [completed, setCompleted] = useState([]);
   const [processing, setProcessing] = useState(false);
-  const [message,    setMessage]    = useState('');
+  const [message, setMessage] = useState('');
   const debounceRef = useRef(null);
 
-  // Update completed IDs whenever userData changes
+  // Fetch today's 4 quests
   useEffect(() => {
-    if (!userData) return;
-    const completedNames = userData.questsCompleted || [];
+    getGlobalDailyQuests()
+      .then(setQuests)
+      .catch((err) => {
+        console.error('Failed to load daily quests:', err);
+        setMessage(`⚠️ ${err.message}`);
+      });
+  }, []);
+
+  // Mark which quests have been completed
+  useEffect(() => {
+    if (!userData || !quests.length) return;
+    const doneNames = userData.questsCompleted || [];
     setCompleted(
-      QUEST_DEFINITIONS
-        .filter(q => completedNames.includes(q.name))
-        .map(q => q.id)
+      quests
+        .filter((q) => doneNames.includes(q.name))
+        .map((q) => q.id)
     );
-  }, [userData]);
+  }, [userData, quests]);
 
   const completeQuest = async (quest) => {
     if (processing || completed.includes(quest.id)) return;
     setProcessing(true);
-    setCompleted(prev => [...prev, quest.id]);
+    setCompleted((prev) => [...prev, quest.id]);
     setMessage(`✅ Completed: ${quest.name}`);
 
     if (!userData) return navigate('/login');
@@ -62,7 +65,7 @@ function Quests() {
       });
     } catch (err) {
       console.error('⚠️ Quest failed:', err);
-      setCompleted(prev => prev.filter(id => id !== quest.id));
+      setCompleted((prev) => prev.filter((id) => id !== quest.id));
       setMessage(`⚠️ ${err.message}`);
     } finally {
       clearTimeout(debounceRef.current);
@@ -82,13 +85,17 @@ function Quests() {
     <div className={styles.container}>
       <h2>🗺️ Daily Quests</h2>
 
+      {quests.length === 0 && !message && <p>Loading quests…</p>}
+
       <div className={styles.questGrid}>
-        {QUEST_DEFINITIONS.map(quest => {
+        {quests.map((quest) => {
           const isDone = completed.includes(quest.id);
           return (
             <div
               key={quest.id}
-              className={`${styles.questCard} ${isDone ? styles.questCardCompleted : ''}`}
+              className={`${styles.questCard} ${
+                isDone ? styles.questCardCompleted : ''
+              }`}
             >
               <h4>{quest.name}</h4>
 

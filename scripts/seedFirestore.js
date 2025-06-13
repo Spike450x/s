@@ -1,10 +1,9 @@
 // scripts/seedFirestore.js
-
 const admin = require('firebase-admin');
 const quests = require('./quests.json');
 const shopItems = require('./shopItems.json');
-
 const serviceAccount = require('./serviceAccountKey.json');
+
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
@@ -12,17 +11,17 @@ const db = admin.firestore();
 
 async function seed() {
   // Seed quests
-  const qCol = db.collection('quests');
+  console.log('Seeding quests...');
   for (const [id, data] of Object.entries(quests)) {
-    console.log(`Writing quest ${id}`);
-    await qCol.doc(id).set(data);
+    await db.collection('quests').doc(id).set(data);
+    console.log(`  → Wrote quest ${id}`);
   }
 
-  // Seed shopItems
-  const sCol = db.collection('shopItems');
+  // Seed shop items
+  console.log('Seeding shopItems...');
   for (const [id, data] of Object.entries(shopItems)) {
-    console.log(`Writing shopItem ${id}`);
-    await sCol.doc(id).set(data);
+    await db.collection('shopItems').doc(id).set(data);
+    console.log(`  → Wrote shopItem ${id}`);
   }
 
   console.log('✅ Seeding complete!');
@@ -30,6 +29,6 @@ async function seed() {
 }
 
 seed().catch((err) => {
-  console.error('Seeding failed:', err);
+  console.error('❌ Seeding failed:', err);
   process.exit(1);
 });
