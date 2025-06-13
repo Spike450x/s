@@ -1,0 +1,4 @@
+node_modules/
+*.local
+# Firebase service account
+/scripts/serviceAccountKey.json

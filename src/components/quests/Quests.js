@@ -12,34 +12,36 @@ import '../../index.css';
 */
 const QUEST_DEFINITIONS = [
   { id: 1, name: 'Drink 8 cups of water', xp: 20, coins: 10 },
-  { id: 2, name: 'Run 1 mile', xp: 30, coins: 15 },
-  { id: 3, name: 'Sleep 7+ hours', xp: 25, coins: 12 },
-  { id: 4, name: 'Do 30 pushups', xp: 35, coins: 20 },
+  { id: 2, name: 'Run 1 mile',           xp: 30, coins: 15 },
+  { id: 3, name: 'Sleep 7+ hours',       xp: 25, coins: 12 },
+  { id: 4, name: 'Do 30 pushups',        xp: 35, coins: 20 },
 ];
 
 function Quests() {
-  const navigate = useNavigate();
+  const navigate    = useNavigate();
   const { userData } = useContext(UserContext);
 
-  const [completed, setCompleted] = useState([]); // IDs of quests already done
+  // IDs of quests the user has already completed
+  const [completed,  setCompleted]  = useState([]);
   const [processing, setProcessing] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message,    setMessage]    = useState('');
   const debounceRef = useRef(null);
 
+  // Update completed IDs whenever userData changes
   useEffect(() => {
     if (!userData) return;
     const completedNames = userData.questsCompleted || [];
     setCompleted(
       QUEST_DEFINITIONS
-        .filter((q) => completedNames.includes(q.name))
-        .map((q) => q.id)
+        .filter(q => completedNames.includes(q.name))
+        .map(q => q.id)
     );
   }, [userData]);
 
   const completeQuest = async (quest) => {
     if (processing || completed.includes(quest.id)) return;
     setProcessing(true);
-    setCompleted((prev) => [...prev, quest.id]);
+    setCompleted(prev => [...prev, quest.id]);
     setMessage(`✅ Completed: ${quest.name}`);
 
     if (!userData) return navigate('/login');
@@ -60,12 +62,20 @@ function Quests() {
       });
     } catch (err) {
       console.error('⚠️ Quest failed:', err);
-      setCompleted((prev) => prev.filter((id) => id !== quest.id));
-      setMessage('⚠️ Quest failed.');
+      setCompleted(prev => prev.filter(id => id !== quest.id));
+      setMessage(`⚠️ ${err.message}`);
     } finally {
       clearTimeout(debounceRef.current);
       debounceRef.current = setTimeout(() => setProcessing(false), 1000);
     }
+  };
+
+  // Helper to render the requirements map
+  const renderRequirements = (req = {}) => {
+    const parts = Object.entries(req).map(
+      ([stat, val]) => `${stat.charAt(0).toUpperCase() + stat.slice(1)}: ${val}`
+    );
+    return parts.join(' • ');
   };
 
   return (
@@ -73,19 +83,27 @@ function Quests() {
       <h2>🗺️ Daily Quests</h2>
 
       <div className={styles.questGrid}>
-        {QUEST_DEFINITIONS.map((quest) => {
+        {QUEST_DEFINITIONS.map(quest => {
           const isDone = completed.includes(quest.id);
           return (
             <div
               key={quest.id}
-              className={`${styles.questCard} ${
-                isDone ? styles.questCardCompleted : ''
-              }`}
+              className={`${styles.questCard} ${isDone ? styles.questCardCompleted : ''}`}
             >
               <h4>{quest.name}</h4>
-              <p>
+
+              {/* New: show the description */}
+              <p className={styles.description}>{quest.description}</p>
+
+              {/* New: show the requirement summary */}
+              <p className={styles.requirement}>
+                <strong>Requirements:</strong> {renderRequirements(quest.requirement)}
+              </p>
+
+              <p className={styles.reward}>
                 🎁 Reward: {quest.xp} XP / {quest.coins} Coins
               </p>
+
               <button
                 onClick={() => completeQuest(quest)}
                 disabled={isDone}

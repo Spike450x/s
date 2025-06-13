@@ -1,3 +1,5 @@
+// src/components/statistics/Statistics.js
+
 import React, { useContext } from 'react';
 import { Line, Bar } from 'react-chartjs-2';
 import {
@@ -41,6 +43,14 @@ export default function Statistics() {
     ? new Date(userData.lastActivity).toLocaleDateString()
     : 'N/A';
 
+  // --- FIX FOR PLAYTIME ---
+  // Assume userData.playtime is stored in minutes
+  const totalMinutes = userData.playtime || 0;
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  // alternatively, for decimal hours:
+  // const displayHours = (totalMinutes / 60).toFixed(2);
+
   const xpLabels = xpHistory.map((entry) =>
     new Date(entry.date).toLocaleDateString()
   );
@@ -60,7 +70,9 @@ export default function Statistics() {
         </p>
         <p>
           Total Playtime:{' '}
-          <span className="font-medium">{userData.playtime} hours</span>
+          <span className="font-medium">
+            {hours}h {minutes}m
+          </span>
         </p>
         <p>
           Monsters Defeated:{' '}
