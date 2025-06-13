@@ -1,71 +1,111 @@
-/* ------------------------------------- */
-/* CharacterCard.module.css             */
-/* ------------------------------------- */
+/* --------------------------------- */
+/* CharacterCard.module.css          */
+/* --------------------------------- */
 
-/* Outer container (border radius, padding, margin, max-width, centering) */
-.container {
+/* Outer container: border, padding, tinted background, fixed min-height */
+.cardContainer {
   border-radius: 12px;
   padding: 1.5rem;
+  background-color: var(--bg-color); /* set via style prop */
+  border: 3px solid var(--border-color); /* set via style prop */
   margin-bottom: 2rem;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
-  position: relative; /* to allow absolute positioning of tooltips */
+  min-height: 550px; /* Ensure consistent height regardless of content */
+  box-sizing: border-box;
 }
 
-/* Avatar image centering and vertical margin */
+/* User name heading */
+.username {
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+/* Avatar image (centered and circular) */
 .avatar {
   display: block;
-  margin: 0.625rem auto; /* 10px */
+  margin: 10px auto; /* centers horizontally */
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
+  object-fit: cover;
 }
 
-/* Health/XP bar container styles */
+/* Class & level text */
+.classLevel {
+  text-align: center;
+  margin: 0.5rem 0;
+}
+
+/* Bars (HP, XP) */
 .barContainer {
+  margin: 10px 0;
+}
+
+.barLabel {
+  font-weight: bold;
+}
+
+.barWrapper {
   background: #ddd;
   border-radius: 8px;
   overflow: hidden;
   height: 12px;
 }
 
-/* Health/XP fill styles (width & background-color set inline) */
 .barFill {
   height: 12px;
   transition: width 0.3s ease;
 }
 
-/* Each stat line (margin between, relative for tooltip) */
+/* Section headings */
+.sectionHeading {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Stats listing */
+.statsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
 .statItem {
   margin-bottom: 4px;
   position: relative;
 }
 
-/* Stat label (bold + pointer cursor) */
 .statLabel {
   font-weight: bold;
   cursor: pointer;
 }
 
-/* Tooltip wrapper for stats (absolute positioning) */
-.tooltipWrapper {
-  position: absolute;
-  top: -28px;
-  left: 0;
+/* Equipment section */
+.gearHeading {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
 }
 
-/* Each equipped-item line (margin + relative) */
-.itemContainer {
+.equippedItem {
   margin-bottom: 4px;
   position: relative;
 }
 
-/* Default “[None]” label style */
-.noneLabel {
-  color: #888;
+.equipLabel {
+  font-weight: bold;
 }
 
-/* Item label (pointer cursor + bold; color set inline) */
-.itemLabel {
+.equipName {
   cursor: pointer;
   font-weight: bold;
+}
+
+/* Tooltip container (same as before) */
+.tooltipContainer {
+  position: absolute;
+  top: -28px;
+  left: 0;
 }

@@ -1,10 +1,8 @@
-// src/components/charactercreation/CharacterCreation.js
-
 import React, { useState } from 'react';
-import { auth, db } from '../../firebase'; // updated path
+import { auth, db } from '../../firebase';
 import { setDoc, doc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
-import classOptions from '../../utils/classOptions'; // updated path
+import classOptions from '../../utils/classOptions';
 
 import styles from './CharacterCreation.module.css';
 import '../../index.css';
@@ -12,20 +10,30 @@ import '../../index.css';
 function CharacterCreation() {
   const [username, setUsername] = useState('');
   const [selectedClass, setSelectedClass] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const user = auth.currentUser;
-    if (!user) return navigate('/login');
-    if (!username || !selectedClass) return alert('Fill in all fields');
+    setError('');
+
+    // Validate presence of both fields
+    if (!username.trim() || !selectedClass) {
+      setError('Please enter a character name and select a class.');
+      return;
+    }
 
     const classData = classOptions[selectedClass];
-    if (!classData) return alert('Invalid class selection');
+    if (!classData) {
+      setError('Invalid class selection.');
+      return;
+    }
+
     const startingItem = classData.startingItem;
+    const trimmedName = username.trim();
 
     const userData = {
-      username,
+      username: trimmedName,
       class: selectedClass,
       avatar: classData.avatar,
       level: 1,
@@ -53,18 +61,26 @@ function CharacterCreation() {
     };
 
     try {
+      const user = auth.currentUser;
+      if (!user) {
+        setError('You must be logged in to create a character.');
+        return navigate('/login');
+      }
+
       await setDoc(doc(db, 'users', user.uid), userData);
-      console.log('✅ Firestore document created for user:', user.uid);
       navigate('/dashboard');
     } catch (err) {
-      console.error('Error creating user doc:', err);
-      alert('Error creating character. Try again.');
+      console.error('Error creating user doc:', err.code);
+      // Simplify: only generic message here
+      setError('Failed to create character. Please try again.');
     }
   };
 
   return (
     <div className="p-8">
-      <h2 className="text-2xl font-semibold mb-4 text-center">🛡️ Create Your Hero</h2>
+      <h2 className="text-2xl font-semibold mb-4 text-center">
+        🛡️ Create Your Hero
+      </h2>
       <form onSubmit={handleSubmit}>
         <label className={styles.formLabel}>
           Character Name:
@@ -85,12 +101,16 @@ function CharacterCreation() {
               <div
                 key={key}
                 onClick={() => setSelectedClass(key)}
-                className={`${
-                  isSelected ? styles.classSelected : styles.classUnselected
-                } ${styles.classOption}`}
-                style={{
-                  backgroundColor: isSelected ? `${cls.color}22` : '#f9f9f9',
-                }}
+                className={`${styles.classOptionCard} ${
+                  isSelected
+                    ? styles.classOptionCardSelected
+                    : styles.classOptionCardUnselected
+                }`}
+                style={
+                  isSelected
+                    ? { '--selected-bg': `${cls.color}22` }
+                    : undefined
+                }
               >
                 <h4 className="text-lg font-bold">{cls.label}</h4>
                 <img
@@ -114,28 +134,31 @@ function CharacterCreation() {
         {selectedClass && (
           <div className={styles.statsContainer}>
             <h4 className={styles.statsHeading}>📊 Starting Stats</h4>
-            <table className="table-collapse w-full">
+            <table className={styles.statsTable}>
               <tbody>
-                {Object.entries(classOptions[selectedClass].startingStats).map(
-                  ([stat, value]) => (
-                    <tr key={stat}>
-                      <td className="font-bold px-4">{stat.charAt(0).toUpperCase() + stat.slice(1)}</td>
-                      <td className="px-4">{value}</td>
-                    </tr>
-                  )
-                )}
+                {Object.entries(
+                  classOptions[selectedClass].startingStats
+                ).map(([stat, value]) => (
+                  <tr key={stat}>
+                    <td className="font-bold">{stat.charAt(0).toUpperCase() + stat.slice(1)}</td>
+                    <td>{value}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
         )}
 
-        <button
-          type="submit"
-          className="mt-6 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-        >
+        <button type="submit" className={styles.startButton}>
           🚀 Start Adventure
         </button>
       </form>
+
+      {error && (
+        <div style={{ color: 'red', marginTop: '12px', textAlign: 'center' }}>
+          {error}
+        </div>
+      )}
     </div>
   );
 }

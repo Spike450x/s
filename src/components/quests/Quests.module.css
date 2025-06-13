@@ -39,6 +39,30 @@
   background-color: #d4edda;
 }
 
+/* Quest description text */
+.description {
+  font-size: 0.9rem;
+  color: #333;
+  margin: 0.5rem 0;
+  text-align: left;
+}
+
+/* Requirement summary text */
+.requirement {
+  font-size: 0.85rem;
+  color: #555;
+  margin: 0.25rem 0 0.5rem;
+  text-align: left;
+}
+
+/* Reward line styling */
+.reward {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  text-align: left;
+}
+
 /* “Complete Quest” / “Completed” button */
 .questButton {
   margin-top: 10px;
@@ -61,6 +85,7 @@
 .message {
   margin-top: 1rem;
   font-size: 1rem;
+  color: #b91c1c;
 }
 
 /* “Back to Dashboard” button container */

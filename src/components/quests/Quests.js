@@ -2,56 +2,44 @@
 
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { doc, updateDoc, arrayUnion, increment } from 'firebase/firestore';
-import { db } from '../../firebase';     // note the "../../"
+import { db } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
 import UserContext from '../../contexts/UserContext';
 
+import { getGlobalDailyQuests } from '../../utils/globalDailyUtils';
 import styles from './Quests.module.css';
-// Corrected path to global index.css
 import '../../index.css';
 
-/**
- * Quests component
- *
- * Displays a list of four hardcoded daily quests. When a user completes a quest,
- * it updates Firestore to increment XP, coins, and add the quest name to both
- * questsCompleted and questHistory arrays; also adds an entry to xpHistory.
- *
- * Props: none (uses UserContext to grab userData)
- *
- * Local State:
- * - completed: array of quest IDs that have already been completed today
- * - processing: boolean that prevents double-click while a Firestore update is in progress
- * - message: feedback string shown after completing or failing a quest
- *
- * Effects:
- * - On mount or when userData changes, seed the `completed` state from userData.questsCompleted.
- */
 function Quests() {
   const navigate = useNavigate();
   const { userData } = useContext(UserContext);
 
-  const [completed, setCompleted] = useState([]); // IDs of quests already done
-  const [processing, setProcessing] = useState(false); // Disable button during update
-  const [message, setMessage] = useState(''); // Feedback message
+  const [quests, setQuests] = useState([]);
+  const [completed, setCompleted] = useState([]);
+  const [processing, setProcessing] = useState(false);
+  const [message, setMessage] = useState('');
   const debounceRef = useRef(null);
 
-  const quests = [
-    { id: 1, name: 'Drink 8 cups of water', xp: 20, coins: 10 },
-    { id: 2, name: 'Run 1 mile', xp: 30, coins: 15 },
-    { id: 3, name: 'Sleep 7+ hours', xp: 25, coins: 12 },
-    { id: 4, name: 'Do 30 pushups', xp: 35, coins: 20 },
-  ];
-
+  // Fetch today's 4 quests
   useEffect(() => {
-    if (!userData) return;
-    const completedNames = userData.questsCompleted || [];
+    getGlobalDailyQuests()
+      .then(setQuests)
+      .catch((err) => {
+        console.error('Failed to load daily quests:', err);
+        setMessage(`⚠️ ${err.message}`);
+      });
+  }, []);
+
+  // Mark which quests have been completed
+  useEffect(() => {
+    if (!userData || !quests.length) return;
+    const doneNames = userData.questsCompleted || [];
     setCompleted(
       quests
-        .filter((q) => completedNames.includes(q.name))
+        .filter((q) => doneNames.includes(q.name))
         .map((q) => q.id)
     );
-  }, [userData]);
+  }, [userData, quests]);
 
   const completeQuest = async (quest) => {
     if (processing || completed.includes(quest.id)) return;
@@ -78,16 +66,26 @@ function Quests() {
     } catch (err) {
       console.error('⚠️ Quest failed:', err);
       setCompleted((prev) => prev.filter((id) => id !== quest.id));
-      setMessage('⚠️ Quest failed.');
+      setMessage(`⚠️ ${err.message}`);
     } finally {
       clearTimeout(debounceRef.current);
       debounceRef.current = setTimeout(() => setProcessing(false), 1000);
     }
   };
 
+  // Helper to render the requirements map
+  const renderRequirements = (req = {}) => {
+    const parts = Object.entries(req).map(
+      ([stat, val]) => `${stat.charAt(0).toUpperCase() + stat.slice(1)}: ${val}`
+    );
+    return parts.join(' • ');
+  };
+
   return (
     <div className={styles.container}>
       <h2>🗺️ Daily Quests</h2>
+
+      {quests.length === 0 && !message && <p>Loading quests…</p>}
 
       <div className={styles.questGrid}>
         {quests.map((quest) => {
@@ -100,9 +98,19 @@ function Quests() {
               }`}
             >
               <h4>{quest.name}</h4>
-              <p>
+
+              {/* New: show the description */}
+              <p className={styles.description}>{quest.description}</p>
+
+              {/* New: show the requirement summary */}
+              <p className={styles.requirement}>
+                <strong>Requirements:</strong> {renderRequirements(quest.requirement)}
+              </p>
+
+              <p className={styles.reward}>
                 🎁 Reward: {quest.xp} XP / {quest.coins} Coins
               </p>
+
               <button
                 onClick={() => completeQuest(quest)}
                 disabled={isDone}

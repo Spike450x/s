@@ -1,0 +1,402 @@
+{
+  "q1": {
+    "name": "Skeleton in the Cemetery",
+    "description": "Walk 8,000 steps to vanquish skeletal warriors.",
+    "requirement": { "steps": 8000 },
+    "xpReward": 50,
+    "coinsReward": 20,
+    "rarity": "Common"
+  },
+  "q2": {
+    "name": "Goblin Ambush",
+    "description": "Complete 1 workout to fend off goblin raiders.",
+    "requirement": { "workouts": 1 },
+    "xpReward": 60,
+    "coinsReward": 25,
+    "rarity": "Common"
+  },
+  "q3": {
+    "name": "Lost in the Mist",
+    "description": "Run 3 miles to find your way out of the fog.",
+    "requirement": { "miles": 3 },
+    "xpReward": 70,
+    "coinsReward": 30,
+    "rarity": "Common"
+  },
+  "q4": {
+    "name": "Night Watch",
+    "description": "Sleep 8 hours to remain vigilant through the night.",
+    "requirement": { "sleep": 8 },
+    "xpReward": 50,
+    "coinsReward": 15,
+    "rarity": "Common"
+  },
+  "q5": {
+    "name": "River Crossing",
+    "description": "Drink 64 oz of water to keep your strength up.",
+    "requirement": { "water": 64 },
+    "xpReward": 40,
+    "coinsReward": 10,
+    "rarity": "Common"
+  },
+  "q6": {
+    "name": "Magma Tunnel",
+    "description": "Burn 500 calories to resist the searing heat.",
+    "requirement": { "caloriesBurnt": 500 },
+    "xpReward": 80,
+    "coinsReward": 35,
+    "rarity": "Common"
+  },
+  "q7": {
+    "name": "Forest Expedition",
+    "description": "Walk 10,000 steps and drink 80 oz of water to chart the woods.",
+    "requirement": { "steps": 10000, "water": 80 },
+    "xpReward": 100,
+    "coinsReward": 40,
+    "rarity": "Uncommon"
+  },
+  "q8": {
+    "name": "Mountain Ascent",
+    "description": "Run 5 miles and sleep 7 hours to reach the summit.",
+    "requirement": { "miles": 5, "sleep": 7 },
+    "xpReward": 120,
+    "coinsReward": 50,
+    "rarity": "Uncommon"
+  },
+  "q9": {
+    "name": "Desert Marathon",
+    "description": "Run 10 miles across the scorching sands.",
+    "requirement": { "miles": 10 },
+    "xpReward": 150,
+    "coinsReward": 60,
+    "rarity": "Rare"
+  },
+  "q10": {
+    "name": "Iron Forge",
+    "description": "Do 30 minutes of HIIT to strengthen your arms for hammering steel.",
+    "requirement": { "workouts": 1 },
+    "xpReward": 90,
+    "coinsReward": 45,
+    "rarity": "Common"
+  },
+  "q11": {
+    "name": "Crystal Cavern",
+    "description": "Walk 6,000 steps and drink 70 oz of water to navigate the glittering caves.",
+    "requirement": { "steps": 6000, "water": 70 },
+    "xpReward": 95,
+    "coinsReward": 47,
+    "rarity": "Common"
+  },
+  "q12": {
+    "name": "Ancient Library",
+    "description": "Complete 2 workouts to unlock the knowledge hidden in dusty tomes.",
+    "requirement": { "workouts": 2 },
+    "xpReward": 70,
+    "coinsReward": 30,
+    "rarity": "Common"
+  },
+  "q13": {
+    "name": "Titan’s Arena",
+    "description": "Burn 1,000 calories to prove your mettle against colossus foes.",
+    "requirement": { "caloriesBurnt": 1000 },
+    "xpReward": 160,
+    "coinsReward": 70,
+    "rarity": "Rare"
+  },
+  "q14": {
+    "name": "Whispering Woods",
+    "description": "Sleep 9 hours and drink 100 oz of water to heed the forest’s secrets.",
+    "requirement": { "sleep": 9, "water": 100 },
+    "xpReward": 110,
+    "coinsReward": 55,
+    "rarity": "Uncommon"
+  },
+  "q15": {
+    "name": "Thunder Peak",
+    "description": "Run 8 miles and burn 800 calories to conquer the storm-lashed summit.",
+    "requirement": { "miles": 8, "caloriesBurnt": 800 },
+    "xpReward": 140,
+    "coinsReward": 65,
+    "rarity": "Rare"
+  },
+  "q16": {
+    "name": "Blizzard Passage",
+    "description": "Walk 12,000 steps to forge a path through the icy gale.",
+    "requirement": { "steps": 12000 },
+    "xpReward": 120,
+    "coinsReward": 50,
+    "rarity": "Uncommon"
+  },
+  "q17": {
+    "name": "Enchanted Garden",
+    "description": "Complete 1 workout and drink 50 oz of water to nurture magical flora.",
+    "requirement": { "workouts": 1, "water": 50 },
+    "xpReward": 75,
+    "coinsReward": 35,
+    "rarity": "Common"
+  },
+  "q18": {
+    "name": "Sunken Ruins",
+    "description": "Run 4 miles and walk 5,000 steps beneath the flooded archways.",
+    "requirement": { "miles": 4, "steps": 5000 },
+    "xpReward": 90,
+    "coinsReward": 40,
+    "rarity": "Common"
+  },
+  "q19": {
+    "name": "Twilight Temple",
+    "description": "Sleep 6 hours and complete 1 workout to balance mind and body.",
+    "requirement": { "sleep": 6, "workouts": 1 },
+    "xpReward": 80,
+    "coinsReward": 30,
+    "rarity": "Common"
+  },
+  "q20": {
+    "name": "Phoenix Nest",
+    "description": "Burn 700 calories and drink 90 oz of water to rise from the ashes.",
+    "requirement": { "caloriesBurnt": 700, "water": 90 },
+    "xpReward": 130,
+    "coinsReward": 60,
+    "rarity": "Rare"
+  },
+  "q21": {
+    "name": "Shadow Marsh",
+    "description": "Walk 7,000 steps and run 2 miles through the murky bog.",
+    "requirement": { "steps": 7000, "miles": 2 },
+    "xpReward": 85,
+    "coinsReward": 37,
+    "rarity": "Common"
+  },
+  "q22": {
+    "name": "Ember Falls",
+    "description": "Drink 100 oz of water and sleep 8 hours to weather the fiery spray.",
+    "requirement": { "water": 100, "sleep": 8 },
+    "xpReward": 105,
+    "coinsReward": 52,
+    "rarity": "Uncommon"
+  },
+  "q23": {
+    "name": "Storm Bridge",
+    "description": "Burn 600 calories and complete 2 workouts to cross the lightning-split span.",
+    "requirement": { "caloriesBurnt": 600, "workouts": 2 },
+    "xpReward": 115,
+    "coinsReward": 57,
+    "rarity": "Uncommon"
+  },
+  "q24": {
+    "name": "Moonlit Ruins",
+    "description": "Sleep 7.5 hours and walk 6,000 steps under the pale moon.",
+    "requirement": { "sleep": 7.5, "steps": 6000 },
+    "xpReward": 85,
+    "coinsReward": 42,
+    "rarity": "Common"
+  },
+  "q25": {
+    "name": "Sunfire Canyon",
+    "description": "Run 6 miles and complete 1 workout to brave the blazing gorge.",
+    "requirement": { "miles": 6, "workouts": 1 },
+    "xpReward": 110,
+    "coinsReward": 48,
+    "rarity": "Uncommon"
+  },
+  "q26": {
+    "name": "Crystal Lake",
+    "description": "Drink 120 oz of water to purify your spirit in the mirror waters.",
+    "requirement": { "water": 120 },
+    "xpReward": 60,
+    "coinsReward": 25,
+    "rarity": "Common"
+  },
+  "q27": {
+    "name": "Firefly Field",
+    "description": "Walk 9,000 steps among the dancing lights.",
+    "requirement": { "steps": 9000 },
+    "xpReward": 95,
+    "coinsReward": 45,
+    "rarity": "Common"
+  },
+  "q28": {
+    "name": "Ice Cavern",
+    "description": "Burn 400 calories and sleep 7 hours to withstand the deep chill.",
+    "requirement": { "caloriesBurnt": 400, "sleep": 7 },
+    "xpReward": 80,
+    "coinsReward": 35,
+    "rarity": "Common"
+  },
+  "q29": {
+    "name": "Grand Citadel",
+    "description": "Run 7 miles and complete 2 workouts to storm the fortress walls.",
+    "requirement": { "miles": 7, "workouts": 2 },
+    "xpReward": 135,
+    "coinsReward": 60,
+    "rarity": "Rare"
+  },
+  "q30": {
+    "name": "Fallen Fortress",
+    "description": "Walk 11,000 steps and burn 900 calories in the ruins.",
+    "requirement": { "steps": 11000, "caloriesBurnt": 900 },
+    "xpReward": 145,
+    "coinsReward": 68,
+    "rarity": "Rare"
+  },
+  "q31": {
+    "name": "Echoing Halls",
+    "description": "Sleep 8 hours and drink 80 oz of water to hear the ancient echoes.",
+    "requirement": { "sleep": 8, "water": 80 },
+    "xpReward": 100,
+    "coinsReward": 50,
+    "rarity": "Common"
+  },
+  "q32": {
+    "name": "Nightfall Tower",
+    "description": "Complete 3 workouts to climb the spiraling steps in darkness.",
+    "requirement": { "workouts": 3 },
+    "xpReward": 120,
+    "coinsReward": 55,
+    "rarity": "Uncommon"
+  },
+  "q33": {
+    "name": "Whispering River",
+    "description": "Drink 150 oz of water to follow the river’s soft murmur.",
+    "requirement": { "water": 150 },
+    "xpReward": 70,
+    "coinsReward": 30,
+    "rarity": "Common"
+  },
+  "q34": {
+    "name": "Cursed Battlefield",
+    "description": "Burn 1,200 calories to break the lingering curse.",
+    "requirement": { "caloriesBurnt": 1200 },
+    "xpReward": 180,
+    "coinsReward": 75,
+    "rarity": "Rare"
+  },
+  "q35": {
+    "name": "Jade Monastery",
+    "description": "Run 2 miles and sleep 8 hours to meditate in the serene halls.",
+    "requirement": { "miles": 2, "sleep": 8 },
+    "xpReward": 90,
+    "coinsReward": 42,
+    "rarity": "Common"
+  },
+  "q36": {
+    "name": "Golden Fields",
+    "description": "Walk 15,000 steps among the waving wheat.",
+    "requirement": { "steps": 15000 },
+    "xpReward": 150,
+    "coinsReward": 65,
+    "rarity": "Rare"
+  },
+  "q37": {
+    "name": "Azure Peak",
+    "description": "Run 12 miles to touch the sky.",
+    "requirement": { "miles": 12 },
+    "xpReward": 200,
+    "coinsReward": 80,
+    "rarity": "Legendary"
+  },
+  "q38": {
+    "name": "Scarlet Marsh",
+    "description": "Complete 2 workouts and drink 100 oz of water in the haunted wetlands.",
+    "requirement": { "workouts": 2, "water": 100 },
+    "xpReward": 120,
+    "coinsReward": 55,
+    "rarity": "Uncommon"
+  },
+  "q39": {
+    "name": "Forgotten Mines",
+    "description": "Burn 800 calories and walk 8,000 steps in the dim tunnels.",
+    "requirement": { "caloriesBurnt": 800, "steps": 8000 },
+    "xpReward": 130,
+    "coinsReward": 60,
+    "rarity": "Uncommon"
+  },
+  "q40": {
+    "name": "Celestial Spire",
+    "description": "Sleep 9 hours and complete 1 workout to commune with the stars.",
+    "requirement": { "sleep": 9, "workouts": 1 },
+    "xpReward": 100,
+    "coinsReward": 50,
+    "rarity": "Common"
+  },
+  "q41": {
+    "name": "Labyrinthine Garden",
+    "description": "Walk 5,000 steps and drink 60 oz of water to solve the twisting maze.",
+    "requirement": { "steps": 5000, "water": 60 },
+    "xpReward": 75,
+    "coinsReward": 35,
+    "rarity": "Common"
+  },
+  "q42": {
+    "name": "Inferno Pit",
+    "description": "Run 3 miles and burn 600 calories to escape the fiery chasm.",
+    "requirement": { "miles": 3, "caloriesBurnt": 600 },
+    "xpReward": 110,
+    "coinsReward": 48,
+    "rarity": "Uncommon"
+  },
+  "q43": {
+    "name": "Sapphire Cavern",
+    "description": "Drink 200 oz of water to reveal the glowing gems.",
+    "requirement": { "water": 200 },
+    "xpReward": 85,
+    "coinsReward": 40,
+    "rarity": "Common"
+  },
+  "q44": {
+    "name": "Obsidian Keep",
+    "description": "Complete 4 workouts to storm the dark citadel.",
+    "requirement": { "workouts": 4 },
+    "xpReward": 160,
+    "coinsReward": 70,
+    "rarity": "Rare"
+  },
+  "q45": {
+    "name": "Verdant Grove",
+    "description": "Walk 10,000 steps and sleep 7 hours to tend the hidden glade.",
+    "requirement": { "steps": 10000, "sleep": 7 },
+    "xpReward": 120,
+    "coinsReward": 58,
+    "rarity": "Uncommon"
+  },
+  "q46": {
+    "name": "Misty Plateau",
+    "description": "Run 9 miles to clear the swirling fog.",
+    "requirement": { "miles": 9 },
+    "xpReward": 170,
+    "coinsReward": 75,
+    "rarity": "Rare"
+  },
+  "q47": {
+    "name": "Thunder Plains",
+    "description": "Burn 1,000 calories to dodge the lightning strikes.",
+    "requirement": { "caloriesBurnt": 1000 },
+    "xpReward": 160,
+    "coinsReward": 68,
+    "rarity": "Rare"
+  },
+  "q48": {
+    "name": "Sunken City",
+    "description": "Complete 1 workout, run 3 miles, and drink 70 oz of water to explore the drowned streets.",
+    "requirement": { "workouts": 1, "miles": 3, "water": 70 },
+    "xpReward": 110,
+    "coinsReward": 50,
+    "rarity": "Common"
+  },
+  "q49": {
+    "name": "Moonshadow Vale",
+    "description": "Sleep 6 hours and walk 4,000 steps under the eclipsed sky.",
+    "requirement": { "sleep": 6, "steps": 4000 },
+    "xpReward": 70,
+    "coinsReward": 30,
+    "rarity": "Common"
+  },
+  "q50": {
+    "name": "Eternal Library",
+    "description": "Walk 2,000 steps, complete 1 workout, and drink 40 oz water to absorb endless knowledge.",
+    "requirement": { "steps": 2000, "workouts": 1, "water": 40 },
+    "xpReward": 60,
+    "coinsReward": 25,
+    "rarity": "Common"
+  }
+}

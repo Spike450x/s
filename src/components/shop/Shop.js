@@ -2,67 +2,41 @@
 
 import React, { useEffect, useState, useContext } from 'react';
 import { doc, updateDoc, arrayUnion, increment } from 'firebase/firestore';
-import { db } from '../../firebase';   // updated path
+import { db } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
 import UserContext from '../../contexts/UserContext';
-import itemIcons from '../../utils/itemIcons';
+
+import { getGlobalDailyShopItems } from '../../utils/globalDailyUtils';
 import { rarityColors } from '../../utils/colors';
 
 import styles from './Shop.module.css';
-// Corrected path to global index.css
 import '../../index.css';
 
 const coinIcon = 'https://img.icons8.com/emoji/48/coin-emoji.png';
 
-const SHOP_ITEMS = [
-  {
-    id: 'sword_of_flame',
-    name: 'Sword of Flame',
-    type: 'Weapon',
-    rarity: 'Epic',
-    effect: '+5 Strength',
-    stat: 'strength',
-    bonus: 5,
-    price: 50,
-    description: 'A blazing sword that grants immense power.',
-    icon: itemIcons.sword,
-  },
-  {
-    id: 'boots_of_wind',
-    name: 'Boots of Wind',
-    type: 'Boots',
-    rarity: 'Rare',
-    effect: '+3 Agility',
-    stat: 'agility',
-    bonus: 3,
-    price: 30,
-    description: 'Swift boots that enhance your speed.',
-    icon: itemIcons.boots,
-  },
-  {
-    id: 'potion_of_might',
-    name: 'Potion of Might',
-    type: 'Consumable',
-    rarity: 'Common',
-    effect: '+2 Strength (1-time use)',
-    stat: 'strength',
-    bonus: 2,
-    price: 15,
-    description: 'A one-time potion to boost your might.',
-    icon: itemIcons.potion,
-  },
-];
-
 function Shop() {
   const navigate = useNavigate();
   const { userData } = useContext(UserContext);
+
+  const [items, setItems] = useState([]);         // fetched daily items
   const [purchasedIds, setPurchasedIds] = useState([]);
   const [message, setMessage] = useState('');
 
+  // Fetch today’s shop items
+  useEffect(() => {
+    getGlobalDailyShopItems()
+      .then(setItems)
+      .catch((err) => {
+        console.error('Failed to load daily shop items:', err);
+        setMessage(`⚠️ ${err.message}`);
+      });
+  }, []);
+
+  // Mark purchased
   useEffect(() => {
     if (!userData) return;
-    const inventory = userData.inventory || [];
-    setPurchasedIds(inventory.map((item) => item.id));
+    const inv = userData.inventory || [];
+    setPurchasedIds(inv.map((i) => i.id));
   }, [userData]);
 
   const buyItem = async (item) => {
@@ -84,36 +58,39 @@ function Shop() {
         inventory: arrayUnion(item),
       });
     } catch (err) {
-      console.error('❌ Failed to buy:', err);
+      console.error('❌ Purchase failed:', err);
       setPurchasedIds((prev) => prev.filter((id) => id !== item.id));
-      setMessage('⚠️ Purchase failed.');
+      setMessage(`⚠️ ${err.message}`);
     }
   };
 
-  if (!userData) return <p>Loading shop...</p>;
+  if (!userData) return <p>Loading shop…</p>;
 
   return (
     <div className={styles.container}>
       <h2 className="text-2xl font-semibold mb-4 text-center">🛒 Shop</h2>
       <p className="text-center mb-6">💰 Coins: {userData.coins || 0}</p>
+
+      {items.length === 0 && !message && <p>Loading items…</p>}
+
       <div className={styles.itemGrid}>
-        {SHOP_ITEMS.map((item) => (
+        {items.map((item) => (
           <div
             key={item.id}
             className={styles.itemCard}
             style={{
-              border: `3px solid ${
-                rarityColors[item.rarity.toLowerCase()] || '#ccc'
-              }`,
+              border: `3px solid ${rarityColors[item.rarity.toLowerCase()]}`,
             }}
           >
-            <img src={item.icon} alt={item.name} width="40" />
+            <img
+              src={item.icon}
+              alt={item.name}
+              width="40"
+            />
             <h3 className="mt-2 mb-1 text-lg font-medium">{item.name}</h3>
             <p
               className="font-semibold mb-1"
-              style={{
-                color: rarityColors[item.rarity.toLowerCase()],
-              }}
+              style={{ color: rarityColors[item.rarity.toLowerCase()] }}
             >
               {item.rarity.toUpperCase()}
             </p>
