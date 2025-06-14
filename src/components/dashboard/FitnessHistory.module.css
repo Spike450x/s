@@ -1,0 +1,24 @@
+.historyContainer {
+  padding: 2rem;
+}
+
+.filterSection {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.logTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.logTable th,
+.logTable td {
+  border: 1px solid #e5e7eb;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.logTable th {
+  background-color: #f3f4f6;
+}

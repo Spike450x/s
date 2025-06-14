@@ -3,20 +3,19 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
-// Auth-related screens (still in src/components/)
-import Login from './components/auth/Login';
+// Auth screens
+import Login  from './components/auth/Login';
 import Signup from './components/auth/Signup';
 
-// Character creation (still in src/components/)
+// Character creation
 import CharacterCreation from './components/charactercreation/CharacterCreation';
 
-// Dashboard (moved into dashboard/ subfolder)
-import Dashboard from './components/dashboard/Dashboard';
-
-// Other feature screens (still in src/components/)
-import Quests from './components/quests/Quests';
-import Shop from './components/shop/Shop';
-import Statistics from './components/statistics/Statistics';
+// Main screens
+import Dashboard      from './components/dashboard/Dashboard';
+import Quests         from './components/quests/Quests';
+import Shop           from './components/shop/Shop';
+import Statistics     from './components/statistics/Statistics';
+import FitnessHistory from './components/dashboard/FitnessHistory';
 
 function App() {
   return (
@@ -24,7 +23,7 @@ function App() {
       {/* Redirect root to /login */}
       <Route path="/" element={<Navigate to="/login" replace />} />
 
-      {/* Auth flows */}
+      {/* Auth */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
 
@@ -33,11 +32,12 @@ function App() {
 
       {/* Main app */}
       <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/quests" element={<Quests />} />
-      <Route path="/shop" element={<Shop />} />
-      <Route path="/stats" element={<Statistics />} />
+      <Route path="/quests"     element={<Quests />} />
+      <Route path="/shop"       element={<Shop />} />
+      <Route path="/stats"      element={<Statistics />} />
+      <Route path="/fitness-history" element={<FitnessHistory />} />
 
-      {/* Catch-all → redirect to login */}
+      {/* Catch-all */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );

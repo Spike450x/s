@@ -16,94 +16,64 @@ const { statIcons, statTooltips } = statData;
 export default function CharacterCard({ user }) {
   const navigate = useNavigate();
 
-  // --- Delay level-up & spellbook reveal until Dashboard mount ---
+  // Level-up & spellbook reveal
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [showSpellbookModal, setShowSpellbookModal] = useState(false);
 
   useEffect(() => {
     const lastSeen = parseInt(localStorage.getItem('lastSeenLevel') || user.level, 10);
-    if (user.level > lastSeen) {
-      setShowLevelUp(true);
-    }
+    if (user.level > lastSeen) setShowLevelUp(true);
     localStorage.setItem('lastSeenLevel', user.level.toString());
+    if (user.pendingSpellbookLevels?.includes(user.level)) setShowSpellbookModal(true);
+  }, []);
 
-    if (user.pendingSpellbookLevels?.includes(user.level)) {
-      setShowSpellbookModal(true);
-    }
-  }, []); // run once on mount
-
-  // auto-hide the level-up banner after 3s
   useEffect(() => {
     if (showLevelUp) {
-      const timer = setTimeout(() => setShowLevelUp(false), 3000);
-      return () => clearTimeout(timer);
+      const t = setTimeout(() => setShowLevelUp(false), 3000);
+      return () => clearTimeout(t);
     }
   }, [showLevelUp]);
 
-  // --- Tooltip state & handlers ---
+  // Tooltip state & handlers
   const [visibleStat, setVisibleStat] = useState(null);
   const [visibleTooltip, setVisibleTooltip] = useState(null);
-  const clearTooltips = () => {
-    setVisibleStat(null);
-    setVisibleTooltip(null);
-  };
-  const toggleStatTooltip = (statKey, e) => {
-    e.stopPropagation();
-    setVisibleStat(prev => (prev === statKey ? null : statKey));
-  };
-  const toggleItemTooltip = (slot, e) => {
-    e.stopPropagation();
-    setVisibleTooltip(prev => (prev === slot ? null : slot));
-  };
+  const clearTooltips = () => { setVisibleStat(null); setVisibleTooltip(null); };
+  const toggleStatTooltip = (key, e) => { e.stopPropagation(); setVisibleStat(prev => prev === key ? null : key); };
+  const toggleItemTooltip = (slot, e) => { e.stopPropagation(); setVisibleTooltip(prev => prev === slot ? null : slot); };
 
-  // --- Class-based styling ---
+  // Styling & bars
   const classColor = classColors[user.class] || '#ccc';
-  const bgColor = `${classColor}22`;
-  const xpColor = xpBarColors[user.class] || '#2196f3';
+  const bgColor    = `${classColor}22`;
+  const xpColor    = xpBarColors[user.class] || '#2196f3';
 
-  // --- Dynamic Health by Level ---
-  const baseHP = 100;
-  const hpPerLevel = 10;
-  const maxHealth = baseHP + user.level * hpPerLevel;
+  const baseHP       = 100;
+  const hpPerLevel   = 10;
+  const maxHealth    = baseHP + user.level * hpPerLevel;
   const currentHealth = Math.min(user.health?.current ?? maxHealth, maxHealth);
-  const hpPercentage = Math.min((currentHealth / maxHealth) * 100, 100);
+  const hpPerc       = Math.min((currentHealth / maxHealth) * 100, 100);
 
-  // --- XP Bar Percentage ---
-  const currentXP = user.xp || 0;
-  const xpNeeded = Math.floor(50 * Math.pow(user.level || 1, 2));
-  const xpPercentage = Math.min((currentXP / xpNeeded) * 100, 100);
+  const currentXP    = user.xp || 0;
+  const xpNeeded     = Math.floor(50 * Math.pow(user.level || 1, 2));
+  const xpPerc       = Math.min((currentXP / xpNeeded) * 100, 100);
 
-  // --- Stats & Equipment Memoization ---
-  const equippedItems = useMemo(() => user.equipped || {}, [user.equipped]);
-  const effectiveStats = useMemo(
-    () => getEffectiveStats(user.stats || {}, equippedItems),
-    [user.stats, equippedItems]
-  );
+  const equipped     = useMemo(() => user.equipped || {}, [user.equipped]);
+  const stats        = useMemo(() => getEffectiveStats(user.stats || {}, equipped), [user.stats, equipped]);
 
-  // Render a single stat line
-  const renderStat = (statKey, label) => (
-    <li className={styles.statItem} key={statKey}>
-      <span
-        className={styles.statLabel}
-        onClick={e => toggleStatTooltip(statKey, e)}
-      >
-        {statIcons[statKey]} {label}: {effectiveStats[statKey] ?? 0}
+  const renderStat = (key, label) => (
+    <li className={styles.statItem} key={key}>
+      <span className={styles.statLabel} onClick={e => toggleStatTooltip(key, e)}>
+        {statIcons[key]} {label}: {stats[key] ?? 0}
       </span>
-      {visibleStat === statKey && (
-        <div
-          className={styles.tooltipContainer}
-          onClick={e => e.stopPropagation()}
-        >
-          <Tooltip>{statTooltips[statKey]}</Tooltip>
+      {visibleStat === key && (
+        <div className={styles.tooltipContainer} onClick={e => e.stopPropagation()}>
+          <Tooltip>{statTooltips[key]}</Tooltip>
         </div>
       )}
     </li>
   );
 
-  // Render one equipped slot
   const renderEquippedItem = (type, label) => {
-    const item = equippedItems[type];
-    const isVisible = visibleTooltip === type;
+    const item = equipped[type], active = visibleTooltip === type;
     return (
       <div className={styles.equippedItem} key={type}>
         <span className={styles.equipLabel}>{label}:</span>{' '}
@@ -112,15 +82,12 @@ export default function CharacterCard({ user }) {
             <span
               className={styles.equipName}
               onClick={e => toggleItemTooltip(type, e)}
-              style={{ color: rarityColors[item.rarity?.toLowerCase()] }}
+              style={{ color: rarityColors[item.rarity.toLowerCase()] }}
             >
               {item.name} ({item.rarity}) – {item.effect}
             </span>
-            {isVisible && (
-              <div
-                className={styles.tooltipContainer}
-                onClick={e => e.stopPropagation()}
-              >
+            {active && (
+              <div className={styles.tooltipContainer} onClick={e => e.stopPropagation()}>
                 <Tooltip>{item.description}</Tooltip>
               </div>
             )}
@@ -134,64 +101,36 @@ export default function CharacterCard({ user }) {
 
   return (
     <div className={styles.cardWrapper}>
-      {/* Level-Up Banner */}
-      {showLevelUp && (
-        <div className={styles.levelUpBanner}>
-          🎉 Level {user.level} Unlocked! 🎉
-        </div>
-      )}
-
-      {/* Spellbook Choice Modal */}
-      {showSpellbookModal && (
-        <SpellbookModal user={user} onClose={() => setShowSpellbookModal(false)} />
-      )}
+      {showLevelUp && <div className={styles.levelUpBanner}>🎉 Level {user.level} Unlocked! 🎉</div>}
+      {showSpellbookModal && <SpellbookModal user={user} onClose={() => setShowSpellbookModal(false)} />}
 
       <div
         onClick={clearTooltips}
         className={styles.cardContainer}
         style={{ '--border-color': classColor, '--bg-color': bgColor }}
       >
-        {/* Username & Avatar */}
         <h2 className={styles.username}>{user.username}</h2>
         <img src={user.avatar} alt="avatar" className={styles.avatar} />
+        <p className={styles.classLevel}>🧙 {user.class.toUpperCase()} | 🏆 Level {user.level}</p>
 
-        {/* Class & Level */}
-        <p className={styles.classLevel}>
-          🧙 {user.class.toUpperCase()} | 🏆 Level {user.level}
-        </p>
-
-        {/* Health Bar */}
         <div className={styles.barContainer}>
           <span className={styles.barLabel}>❤️ HP:</span>
           <div className={styles.barWrapper}>
-            <div
-              className={styles.barFill}
-              style={{ width: `${hpPercentage}%`, backgroundColor: '#e74c3c' }}
-            />
+            <div className={styles.barFill} style={{ width: `${hpPerc}%`, backgroundColor: '#e74c3c' }} />
           </div>
-          <small>
-            {currentHealth} / {maxHealth}
-          </small>
+          <small>{currentHealth} / {maxHealth}</small>
         </div>
 
-        {/* XP Bar */}
         <div className={styles.barContainer}>
           <span className={styles.barLabel}>📈 XP:</span>
           <div className={styles.barWrapper}>
-            <div
-              className={styles.barFill}
-              style={{ width: `${xpPercentage}%`, backgroundColor: xpColor }}
-            />
+            <div className={styles.barFill} style={{ width: `${xpPerc}%`, backgroundColor: xpColor }} />
           </div>
-          <small>
-            {currentXP} / {xpNeeded} XP
-          </small>
+          <small>{currentXP} / {xpNeeded} XP</small>
         </div>
 
-        {/* Attribute Point Allocator */}
         <AttributeAllocator user={user} />
 
-        {/* Stats Section */}
         <h3 className={styles.sectionHeading}>🧬 Stats</h3>
         <ul className={styles.statsList}>
           {renderStat('luck', 'Luck')}
@@ -202,16 +141,17 @@ export default function CharacterCard({ user }) {
           {renderStat('strength', 'Strength')}
         </ul>
 
-        {/* Equipped Gear Section */}
         <h3 className={styles.gearHeading}>🧤 Equipped Gear</h3>
         {renderEquippedItem('weapon', '🗡️ Weapon')}
-        {renderEquippedItem('armor', '🛡️ Armor')}
-        {renderEquippedItem('boots', '🥾 Boots')}
+        {renderEquippedItem('armor',  '🛡️ Armor')}
+        {renderEquippedItem('boots',  '🥾 Boots')}
         {renderEquippedItem('consumable', '🧪 Consumable')}
 
-        {/* View Statistics Button */}
         <div style={{ textAlign: 'center', marginTop: '1rem' }}>
           <button onClick={() => navigate('/stats')}>📊 View Statistics</button>
+          <button onClick={() => navigate('/fitness-history')} style={{ marginLeft: '0.5rem' }}>
+            📜 View Fitness History
+          </button>
         </div>
       </div>
     </div>

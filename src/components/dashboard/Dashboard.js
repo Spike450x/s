@@ -8,7 +8,8 @@ import UserContext from '../../contexts/UserContext';
 
 import CharacterCard from './CharacterCard';
 import Inventory from './Inventory';
-import SpellbookList from './SpellbookList';  // ← new import
+import SpellbookList from './SpellbookList';
+import DailyLogModal from './DailyLogModal';
 
 import styles from './Dashboard.module.css';
 import '../../index.css';
@@ -17,59 +18,44 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { userData, loading } = useContext(UserContext);
 
-  // DEBUG: see whether loading/userData update
-  console.log('Dashboard → loading:', loading, 'userData:', userData);
+  const [showInventory, setShowInventory]   = useState(false);
+  const [showSpellbooks, setShowSpellbooks] = useState(false);
+  const [isDailyLogOpen, setIsDailyLogOpen] = useState(false);
 
-  const [showInventory, setShowInventory] = useState(false);
-  const [showSpellbooks, setShowSpellbooks] = useState(false);  // ← new state
-
-  // If not loading but no userData, redirect to login
+  // Redirect if not logged in
   useEffect(() => {
-    if (!loading && !userData) {
-      navigate('/login');
-    }
+    if (!loading && !userData) navigate('/login');
   }, [loading, userData, navigate]);
 
   // Daily stat bumps based on fitness fields
   useEffect(() => {
     if (loading || !userData) return;
 
-    const uid = userData.uid;
-    const userRef = doc(db, 'users', uid);
+    const uid      = userData.uid;
+    const userRef  = doc(db, 'users', uid);
     const localKey = `lastDailyUpdate_${uid}`;
-    const lastChecked = localStorage.getItem(localKey);
-    const today = new Date().toISOString().split('T')[0];
+    const lastDate = localStorage.getItem(localKey);
+    const today    = new Date().toISOString().split('T')[0];
 
-    if (lastChecked !== today) {
-      const updates = {
-        lastActivity: today,
-        playtime: increment(0.25),
-      };
-
+    if (lastDate !== today) {
+      const updates = { lastActivity: today, playtime: increment(0.25) };
       const { fitness } = userData;
       if (fitness) {
         const bumps = {
-          'stats.agility': Math.floor(fitness.miles / 5),
-          'stats.strength': Math.floor(fitness.strengthSessions / 3),
-          'stats.vitality': Math.floor(fitness.workouts / 4),
+          'stats.agility':   Math.floor(fitness.miles / 5),
+          'stats.strength':  Math.floor(fitness.strengthSessions / 3),
+          'stats.vitality':  Math.floor(fitness.workouts / 4),
           'stats.intellect': Math.floor(fitness.sleepDays / 5),
           'stats.endurance': Math.floor(fitness.waterDays / 5),
-          'stats.luck': Math.floor(fitness.steps / 10000),
+          'stats.luck':      Math.floor(fitness.steps / 10000),
         };
-        Object.entries(bumps).forEach(([key, val]) => {
-          if (val > 0) {
-            updates[key] = increment(val);
-          }
+        Object.entries(bumps).forEach(([k,v]) => {
+          if (v > 0) updates[k] = increment(v);
         });
       }
-
       updateDoc(userRef, updates)
-        .then(() => {
-          localStorage.setItem(localKey, today);
-        })
-        .catch((err) => {
-          console.error('Error applying daily updates:', err);
-        });
+        .then(() => localStorage.setItem(localKey, today))
+        .catch(err => console.error('Error applying daily updates:', err));
     }
   }, [loading, userData]);
 
@@ -78,7 +64,7 @@ export default function Dashboard() {
     const userRef = doc(db, 'users', userData.uid);
     try {
       await updateDoc(userRef, {
-        ['equipped.' + item.type.toLowerCase()]: item,
+        [`equipped.${item.type.toLowerCase()}`]: item,
       });
     } catch (err) {
       console.error('Equip failed:', err);
@@ -90,7 +76,7 @@ export default function Dashboard() {
     const userRef = doc(db, 'users', userData.uid);
     try {
       await updateDoc(userRef, {
-        ['equipped.' + slot]: null,
+        [`equipped.${slot}`]: null,
       });
     } catch (err) {
       console.error('Unequip failed:', err);
@@ -114,62 +100,40 @@ export default function Dashboard() {
     <div className="min-h-screen p-6 bg-gray-50 overflow-x-hidden">
       {/* Top-right nav buttons */}
       <div className={styles.navBar}>
-        <button
-          onClick={() => navigate('/shop')}
-          className={styles.iconButton}
-          aria-label="Arcane Shop"
-          title="Arcane Shop"
-        >
-          🛒
-        </button>
-        <button
-          onClick={() => navigate('/quests')}
-          className={styles.iconButton}
-          aria-label="Daily Quests"
-          title="Daily Quests"
-        >
-          📜
-        </button>
-        <button
-          onClick={handleLogout}
-          className={styles.iconButton}
-          aria-label="Logout"
-          title="Logout"
-        >
-          🔓
-        </button>
+        <button onClick={() => navigate('/shop')} className={styles.iconButton} title="Arcane Shop">🛒</button>
+        <button onClick={() => navigate('/quests')} className={styles.iconButton} title="Daily Quests">📜</button>
+        <button onClick={() => setIsDailyLogOpen(true)} className={styles.iconButton} title="Daily Log">📋</button>
+        <button onClick={handleLogout} className={styles.iconButton} title="Logout">🔓</button>
       </div>
 
+      {/* Daily Log Modal */}
+      <DailyLogModal isOpen={isDailyLogOpen} onClose={() => setIsDailyLogOpen(false)} />
+
       {/* Welcome message */}
-      <h1 className={styles.heroTitle}>
-        Welcome Back, Hero 🧙
-      </h1>
+      <h1 className={styles.heroTitle}>Welcome Back, Hero 🧙</h1>
 
       {/* CharacterCard centered */}
       <div className={styles.centerWrapper}>
         <CharacterCard user={userData} />
       </div>
 
-      {/* Show/Hide Inventory and Spellbooks buttons */}
+      {/* Show/Hide Inventory & Spellbooks */}
       <div className={styles.centerWrapper}>
         <button
           onClick={() => setShowInventory(prev => !prev)}
           className={styles.inventoryToggleBtn}
         >
-          <span className={styles.inventoryToggleIcon}>📦</span>
-          {showInventory ? 'Hide Inventory' : 'Show Inventory'}
+          📦 {showInventory ? 'Hide Inventory' : 'Show Inventory'}
         </button>
         <button
           onClick={() => setShowSpellbooks(prev => !prev)}
           className={styles.inventoryToggleBtn}
           style={{ marginLeft: '1rem' }}
         >
-          <span className={styles.inventoryToggleIcon}>📜</span>
-          {showSpellbooks ? 'Hide Spellbooks' : 'Show Spellbooks'}
+          📜 {showSpellbooks ? 'Hide Spellbooks' : 'Show Spellbooks'}
         </button>
       </div>
 
-      {/* Inventory section */}
       {showInventory && (
         <div className={styles.inventoryContainer}>
           <Inventory
@@ -181,7 +145,6 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Spellbooks section */}
       {showSpellbooks && (
         <div className={styles.inventoryContainer}>
           <SpellbookList items={userData.inventory || []} />
