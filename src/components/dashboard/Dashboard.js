@@ -8,6 +8,7 @@ import UserContext from '../../contexts/UserContext';
 
 import CharacterCard from './CharacterCard';
 import Inventory from './Inventory';
+import SpellbookList from './SpellbookList';  // ← new import
 
 import styles from './Dashboard.module.css';
 import '../../index.css';
@@ -20,6 +21,7 @@ export default function Dashboard() {
   console.log('Dashboard → loading:', loading, 'userData:', userData);
 
   const [showInventory, setShowInventory] = useState(false);
+  const [showSpellbooks, setShowSpellbooks] = useState(false);  // ← new state
 
   // If not loading but no userData, redirect to login
   useEffect(() => {
@@ -148,14 +150,22 @@ export default function Dashboard() {
         <CharacterCard user={userData} />
       </div>
 
-      {/* Show/Hide Inventory button */}
+      {/* Show/Hide Inventory and Spellbooks buttons */}
       <div className={styles.centerWrapper}>
         <button
-          onClick={() => setShowInventory((prev) => !prev)}
+          onClick={() => setShowInventory(prev => !prev)}
           className={styles.inventoryToggleBtn}
         >
           <span className={styles.inventoryToggleIcon}>📦</span>
           {showInventory ? 'Hide Inventory' : 'Show Inventory'}
+        </button>
+        <button
+          onClick={() => setShowSpellbooks(prev => !prev)}
+          className={styles.inventoryToggleBtn}
+          style={{ marginLeft: '1rem' }}
+        >
+          <span className={styles.inventoryToggleIcon}>📜</span>
+          {showSpellbooks ? 'Hide Spellbooks' : 'Show Spellbooks'}
         </button>
       </div>
 
@@ -168,6 +178,13 @@ export default function Dashboard() {
             onEquip={handleEquip}
             onUnequip={handleUnequip}
           />
+        </div>
+      )}
+
+      {/* Spellbooks section */}
+      {showSpellbooks && (
+        <div className={styles.inventoryContainer}>
+          <SpellbookList items={userData.inventory || []} />
         </div>
       )}
     </div>
