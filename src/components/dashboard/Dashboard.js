@@ -10,6 +10,7 @@ import CharacterCard from './CharacterCard';
 import Inventory from './Inventory';
 import SpellbookList from './SpellbookList';
 import DailyLogModal from './DailyLogModal';
+import ProfileSettingsModal from './ProfileSettingsModal';
 
 import styles from './Dashboard.module.css';
 import '../../index.css';
@@ -21,6 +22,7 @@ export default function Dashboard() {
   const [showInventory, setShowInventory]   = useState(false);
   const [showSpellbooks, setShowSpellbooks] = useState(false);
   const [isDailyLogOpen, setIsDailyLogOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // Redirect if not logged in
   useEffect(() => {
@@ -45,11 +47,11 @@ export default function Dashboard() {
           'stats.agility':   Math.floor(fitness.miles / 5),
           'stats.strength':  Math.floor(fitness.strengthSessions / 3),
           'stats.vitality':  Math.floor(fitness.workouts / 4),
-          'stats.intellect': Math.floor(fitness.sleepDays / 5),
-          'stats.endurance': Math.floor(fitness.waterDays / 5),
-          'stats.luck':      Math.floor(fitness.steps / 10000),
+          'stats.intellect': Math.floor(fitness.sleepDays   / 5),
+          'stats.endurance': Math.floor(fitness.waterDays   / 5),
+          'stats.luck':      Math.floor(fitness.steps       / 10000),
         };
-        Object.entries(bumps).forEach(([k,v]) => {
+        Object.entries(bumps).forEach(([k, v]) => {
           if (v > 0) updates[k] = increment(v);
         });
       }
@@ -59,6 +61,23 @@ export default function Dashboard() {
     }
   }, [loading, userData]);
 
+  // Toggle handlers: only one dropdown open at a time
+  const handleToggleInventory = () => {
+    setShowInventory(prev => {
+      const newState = !prev;
+      if (newState) setShowSpellbooks(false);
+      return newState;
+    });
+  };
+  const handleToggleSpellbooks = () => {
+    setShowSpellbooks(prev => {
+      const newState = !prev;
+      if (newState) setShowInventory(false);
+      return newState;
+    });
+  };
+
+  // Equip/unequip handlers
   const handleEquip = async (item) => {
     if (!userData) return;
     const userRef = doc(db, 'users', userData.uid);
@@ -83,6 +102,7 @@ export default function Dashboard() {
     }
   };
 
+  // Logout handler
   const handleLogout = async () => {
     try {
       await auth.signOut();
@@ -100,14 +120,16 @@ export default function Dashboard() {
     <div className="min-h-screen p-6 bg-gray-50 overflow-x-hidden">
       {/* Top-right nav buttons */}
       <div className={styles.navBar}>
-        <button onClick={() => navigate('/shop')} className={styles.iconButton} title="Arcane Shop">🛒</button>
-        <button onClick={() => navigate('/quests')} className={styles.iconButton} title="Daily Quests">📜</button>
+        <button onClick={() => navigate('/shop')}       className={styles.iconButton} title="Arcane Shop">🛒</button>
+        <button onClick={() => navigate('/quests')}     className={styles.iconButton} title="Daily Quests">📜</button>
         <button onClick={() => setIsDailyLogOpen(true)} className={styles.iconButton} title="Daily Log">📋</button>
-        <button onClick={handleLogout} className={styles.iconButton} title="Logout">🔓</button>
+        <button onClick={() => setIsSettingsOpen(true)} className={styles.iconButton} title="Settings">⚙️</button>
+        <button onClick={handleLogout}                  className={styles.iconButton} title="Logout">🔓</button>
       </div>
 
-      {/* Daily Log Modal */}
-      <DailyLogModal isOpen={isDailyLogOpen} onClose={() => setIsDailyLogOpen(false)} />
+      {/* Modals */}
+      <DailyLogModal           isOpen={isDailyLogOpen} onClose={() => setIsDailyLogOpen(false)} />
+      <ProfileSettingsModal    isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
 
       {/* Welcome message */}
       <h1 className={styles.heroTitle}>Welcome Back, Hero 🧙</h1>
@@ -119,26 +141,21 @@ export default function Dashboard() {
 
       {/* Show/Hide Inventory & Spellbooks */}
       <div className={styles.centerWrapper}>
-        <button
-          onClick={() => setShowInventory(prev => !prev)}
-          className={styles.inventoryToggleBtn}
-        >
-          📦 {showInventory ? 'Hide Inventory' : 'Show Inventory'}
+        <button onClick={handleToggleInventory} className={styles.inventoryToggleBtn}>
+          <span className={styles.inventoryToggleIcon}>📦</span>
+          {showInventory ? 'Hide Inventory' : 'Show Inventory'}
         </button>
-        <button
-          onClick={() => setShowSpellbooks(prev => !prev)}
-          className={styles.inventoryToggleBtn}
-          style={{ marginLeft: '1rem' }}
-        >
-          📜 {showSpellbooks ? 'Hide Spellbooks' : 'Show Spellbooks'}
+        <button onClick={handleToggleSpellbooks} className={styles.inventoryToggleBtn} style={{ marginLeft: '1rem' }}>
+          <span className={styles.inventoryToggleIcon}>📜</span>
+          {showSpellbooks ? 'Hide Spellbooks' : 'Show Spellbooks'}
         </button>
       </div>
 
       {showInventory && (
         <div className={styles.inventoryContainer}>
           <Inventory
-            items={userData.inventory || []}
-            equipped={userData.equipped || {}}
+            items={userData.inventory     || []}
+            equipped={userData.equipped    || {}}
             onEquip={handleEquip}
             onUnequip={handleUnequip}
           />
