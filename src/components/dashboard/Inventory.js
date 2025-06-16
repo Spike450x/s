@@ -31,14 +31,22 @@ function Inventory({ items, equipped, onEquip, onUnequip }) {
     setTypeFilter(e.target.value);
   };
 
-  // Compute filtered items based on both filters
-  const filteredItems = items.filter((item) => {
-    const matchesRarity =
-      rarityFilter === 'all' ? true : item.rarity?.toLowerCase() === rarityFilter;
-    const matchesType =
-      typeFilter === 'all' ? true : item.type.toLowerCase() === typeFilter;
-    return matchesRarity && matchesType;
-  });
+  // Compute filtered items based on spellbook exclusion + both filters
+  const filteredItems = items
+    // 1. Exclude spellbooks entirely
+    .filter(item => item.type.toLowerCase() !== 'spellbook')
+    // 2. Then apply rarity & type filters
+    .filter(item => {
+      const matchesRarity =
+        rarityFilter === 'all'
+          ? true
+          : item.rarity?.toLowerCase() === rarityFilter;
+      const matchesType =
+        typeFilter === 'all'
+          ? true
+          : item.type.toLowerCase() === typeFilter;
+      return matchesRarity && matchesType;
+    });
 
   return (
     <div className={styles.inventoryContent}>

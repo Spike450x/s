@@ -109,3 +109,83 @@
 .backButton:focus {
   background-color: #1f2937; /* darker */
 }
+
+/* --------------------------------- */
+/* Popup styling for user messages   */
+/* --------------------------------- */
+
+/* Overlay that darkens the background */
+.popupOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Container for the popup message */
+.popupContainer {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 360px;
+  width: 90%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+/* Attention-grabber icon */
+.popupIcon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Popup title (quest name line) */
+.popupTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* Each requirement block */
+.popupReqBlock {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* Requirement label (e.g. “Workouts”) */
+.popupReqLabel {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  text-align: center;
+}
+
+/* Requirement details (Need / Actual) */
+.popupReqDetail {
+  line-height: 1.4;
+  color: #333;
+}
+
+/* Close button in the popup */
+.popupClose {
+  display: block;
+  margin: 1.5rem auto 0;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.popupClose:hover {
+  background: #0056b3;
+}

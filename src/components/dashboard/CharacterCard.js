@@ -1,6 +1,6 @@
 // src/components/dashboard/CharacterCard.js
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Tooltip from '../tooltip/Tooltip';
 import { getEffectiveStats } from '../../utils/stats';
@@ -20,6 +20,8 @@ export default function CharacterCard({ user }) {
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [showSpellbookModal, setShowSpellbookModal] = useState(false);
 
+  // Only run once on mount – skip exhaustive-deps warning
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const lastSeen = parseInt(localStorage.getItem('lastSeenLevel') || user.level, 10);
     if (user.level > lastSeen) setShowLevelUp(true);
